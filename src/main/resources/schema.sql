@@ -1,0 +1,126 @@
+DROP DATABASE IF EXISTS hoteljb;
+CREATE DATABASE hoteljb;
+USE hoteljb;
+
+
+-- Tabla CATEGORY
+CREATE TABLE CATEGORY (
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
+-- Tabla SUB_CATEGORY
+CREATE TABLE SUB_CATEGORY (
+    subcategory_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    category_id INT NOT NULL,
+    img VARCHAR(50),
+    FOREIGN KEY (category_id) REFERENCES CATEGORY(category_id) ON DELETE CASCADE
+);
+
+-- Tabla DETAIL_ROOM
+CREATE TABLE DETAIL_ROOM (
+    detail_room_id INT PRIMARY KEY AUTO_INCREMENT,
+    detail_name VARCHAR(25) NOT NULL
+);
+
+-- Tabla ROOM
+CREATE TABLE ROOM (
+    room_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    max_capacity INT NOT NULL,
+    description VARCHAR(150),
+    price FLOAT NOT NULL
+);
+
+-- Tabla ROOMxDETAIL_ROOM
+CREATE TABLE ROOMxDETAIL_ROOM (
+    room_detail_id INT PRIMARY KEY AUTO_INCREMENT,
+    room_id INT NOT NULL,
+    detail_room_id INT NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES ROOM(room_id) ON DELETE CASCADE,
+    FOREIGN KEY (detail_room_id) REFERENCES DETAIL_ROOM(detail_room_id) ON DELETE CASCADE
+);
+
+-- Tabla IMG
+CREATE TABLE IMG (
+    img_id INT PRIMARY KEY AUTO_INCREMENT,
+    name_img VARCHAR(50) NOT NULL,
+    path VARCHAR(256) NOT NULL
+);
+
+-- Tabla ROOMxIMG (relación entre ROOM e IMG)
+CREATE TABLE ROOMxIMG (
+    room_img_id INT PRIMARY KEY AUTO_INCREMENT,
+    room_id INT NOT NULL,
+    img_id INT NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES ROOM(room_id) ON DELETE CASCADE,
+    FOREIGN KEY (img_id) REFERENCES IMG(img_id) ON DELETE CASCADE
+);
+
+-- Tabla POST
+CREATE TABLE POST (
+    post_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(25) NOT NULL,
+    description VARCHAR(256),
+    path_image VARCHAR(256),
+    subcategory_id INT NOT NULL,
+    FOREIGN KEY (subcategory_id) REFERENCES SUB_CATEGORY(subcategory_id) ON DELETE CASCADE
+);
+
+-- Tabla MENU
+CREATE TABLE MENU (
+    menu_id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(50) NOT NULL,
+    path VARCHAR(256) NOT NULL
+);
+
+-- Tabla USER_
+CREATE TABLE USER_ (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+-- Tabla GALLERY
+CREATE TABLE GALLERY (
+    gallery_id INT PRIMARY KEY AUTO_INCREMENT,
+    name_img VARCHAR(25) NOT NULL,
+    path VARCHAR(256) NOT NULL
+);
+
+-- Tabla CONTACT
+CREATE TABLE CONTACT (
+    contact_id INT PRIMARY KEY AUTO_INCREMENT,
+    telephone VARCHAR(15),
+    telephone2 VARCHAR(15),
+    address VARCHAR(50),
+    email VARCHAR(50),
+    instagram VARCHAR(50),
+    facebook VARCHAR(50)
+);
+
+-- Tabla RESERVATION
+CREATE TABLE RESERVATION (
+    reservation_id INT PRIMARY KEY AUTO_INCREMENT,
+    init_date DATE NOT NULL,
+    finish_date DATE NOT NULL,
+    cant_people INT NOT NULL,
+    email VARCHAR(50),
+    phone VARCHAR(15),
+    payment FLOAT NOT NULL,
+    room_id INT NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES ROOM(room_id) ON DELETE CASCADE
+);
+
+-- Tabla TOKEN
+CREATE TABLE TOKEN (
+    token_id INT PRIMARY KEY AUTO_INCREMENT,
+    f_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES USER_(user_id) ON DELETE CASCADE
+);
+
+INSERT INTO USER_ (username, password) VALUES
+('admin', '$2a$12$9DH0sOWz1d/m/IYd5DBhve5fnJA7g.C91cliks5Ta.KHPARx5utsq');

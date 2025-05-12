@@ -1,0 +1,2140 @@
+{
+  "name": "HotelJB",
+  "version": "1",
+  "items": [
+    {
+      "type": "http",
+      "name": "imagen",
+      "seq": 2,
+      "request": {
+        "url": "http://localhost:8080/uploads/google.jpg",
+        "method": "GET",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "none",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "folder",
+      "name": "Category",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/category/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTI5MTkyNiwiZXhwIjoxNzM5Mzc4MzI2fQ.LQsTUEjxdFo4dVRg6VFDxrkpUCz0DOxhMFL5unkw5MHRgj_fbh9mNJTNNnOMkMs2RHrATjD66zxNWhJlVzSTsw"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/category/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/category/?lang=es",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "lang",
+                "value": "es",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTI4ODU4MCwiZXhwIjoxNzM5Mzc0OTgwfQ.qSvCdTk78R2OB09pNLDeELFuJhj8Ip57jnRVVIE2khzhiN-erSCCQzexzjUeTkPG"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/category/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Category_Room",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/category-room/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"nameCategory\":\"Habitacion doble\",\n  \"description\":\"tiene dos camas\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTQ2MjQ4MywiZXhwIjoxNzM5NTQ4ODgzfQ.snBlHFBb0XY1s5RCyEI6KqNb3oypMVKo2KquCWkQGOuGvRkbJPmfHTQo2sIkviA7fmlDk8RzyIW3ptsjhQ_rwQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/category-room/?lang=es",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "lang",
+                "value": "es",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "id",
+                "value": "3",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTQ2NTc5NSwiZXhwIjoxNzM5NTUyMTk1fQ.wLqi6QlVGm-_8kX8-oSSJz-co-RjIucxKv1KOnjVCxwvcAGQo-h6PtMsdRyWFqAKzpDJd38DDyp9IVqaGxdQLg"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/category/4",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/category-room/4",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"nameCategory\":\"Habitacion doble\",\n  \"description\":\"camas\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTQ2NTc5NSwiZXhwIjoxNzM5NTUyMTk1fQ.wLqi6QlVGm-_8kX8-oSSJz-co-RjIucxKv1KOnjVCxwvcAGQo-h6PtMsdRyWFqAKzpDJd38DDyp9IVqaGxdQLg"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Auth",
+      "items": [
+        {
+          "type": "http",
+          "name": "Login",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/auth/login",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"username\":\"admin\",\n  \"password\":\"admin\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Post",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/post/upload",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "multipartForm",
+              "json": "{\n    \"postId\": 1,\n    \"title\": \"Nueva Suite Disponible\",\n    \"description\": \"Hemos añadido una nueva suite de lujo con vista al mar.\",\n    \"pathImage\": \"/images/posts/suite.jpg\",\n    \"categoryId\":2\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": [
+                {
+                  "type": "text",
+                  "name": "title",
+                  "value": "esto es una prueba3",
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "description",
+                  "value": "esto es una prueba",
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "categoryId",
+                  "value": "1",
+                  "enabled": true
+                },
+                {
+                  "type": "file",
+                  "name": "file",
+                  "value": [
+                    "C:\\Users\\gerar\\Downloads\\yo.jpg"
+                  ],
+                  "enabled": true
+                }
+              ]
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTgyNjIxNywiZXhwIjoxNzM5OTEyNjE3fQ.yy9A_re8fxnLABmNvoqttqfPSz3LxzgXwRPjptdcEVWHGPAsFrDS3sbDlIFRxI_m65EKiV-Fe1pUVtqhsAG5pQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/post/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/post/?categoryId=2&lang=es",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "categoryId",
+                "value": "2",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "lang",
+                "value": "es",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "id",
+                "value": "2",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTU2Mjc4NSwiZXhwIjoxNzM5NjQ5MTg1fQ.lsb4VlMfOlc53rrE6dR4hcXj1J1V9Loj3Ys_nHWBcT2bGU1ItUV-_JjMv1-8AgZsntV4XySrO8TzX9e0_xbhQA"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/post/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Gallery",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/gallery/upload",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "multipartForm",
+              "json": "{\n    \"nameImg\": \"hotel_room.jpg\",\n    \"path\": \"/images/hotel/hotel_room.jpg\"\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": [
+                {
+                  "type": "file",
+                  "name": "file",
+                  "value": [
+                    "C:\\Users\\gerar\\Downloads\\image13.jpeg"
+                  ],
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "name",
+                  "value": "hotel",
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "categoryId",
+                  "value": "1",
+                  "enabled": true
+                }
+              ]
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTk4NjIzMCwiZXhwIjoxNzQwMDcyNjMwfQ.Tms41g8x1dGI8ZgGK-zZ3FhzoqU2jGdH1VX45t9IICmxg335AfdSsqECQABYdEq0qSOPbUi0-S99oN8IGZ77tA"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 5,
+          "request": {
+            "url": "http://localhost:8080/api/gallery/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/gallery/",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get One",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/gallery/download/1",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "multipartForm",
+              "json": "{\n    \"nameImg\": \"hotel_room.jpg\",\n    \"path\": \"/images/hotel/hotel_room.jpg\"\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": [
+                {
+                  "type": "file",
+                  "name": "file",
+                  "value": [
+                    "C:\\Users\\gerar\\Downloads\\images.jpeg"
+                  ],
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "name",
+                  "value": "imageTest",
+                  "enabled": true
+                }
+              ]
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODM1MjY4MywiZXhwIjoxNzM4NDM5MDgzfQ.AgYeF5J2v5F0usBRg-vs4jIX_PWc9vheqjZs3eqEc8MMUEYbzf6p0fU-CPSB17Bt"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/gallery/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"detailName\":\"detail Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Contact",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/contact/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"telephone\": \"a\",\n    \"telephone2\": \"+503 7777-8888\",\n    \"address\": \"Avenida Central, San Salvador, El Salvador\",\n    \"email\": \"contacto@hoteljb.com\",\n    \"instagramUsername\": \"hoteljb_oficial_inta\",\n    \"facebookUsername\": \"Hotel Jardines de las Marías\",\n  \"facebookUrl\":\"kld ljrihe  hkjhfkajhds\"\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTU2Mjc4NSwiZXhwIjoxNzM5NjQ5MTg1fQ.lsb4VlMfOlc53rrE6dR4hcXj1J1V9Loj3Ys_nHWBcT2bGU1ItUV-_JjMv1-8AgZsntV4XySrO8TzX9e0_xbhQA"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/contact/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/contact/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/contact/",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTI4ODU4MCwiZXhwIjoxNzM5Mzc0OTgwfQ.qSvCdTk78R2OB09pNLDeELFuJhj8Ip57jnRVVIE2khzhiN-erSCCQzexzjUeTkPG"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Image",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/img/upload",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "multipartForm",
+              "json": "{\n    \"nameImg\": \"hotel_room.jpg\",\n    \"path\": \"/images/hotel/hotel_room.jpg\"\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": [
+                {
+                  "type": "file",
+                  "name": "file",
+                  "value": [
+                    "C:\\Users\\gerar\\Downloads\\Gerardohenriquez-cv.pdf"
+                  ],
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "name",
+                  "value": "cv",
+                  "enabled": true
+                }
+              ]
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODM1MjY4MywiZXhwIjoxNzM4NDM5MDgzfQ.AgYeF5J2v5F0usBRg-vs4jIX_PWc9vheqjZs3eqEc8MMUEYbzf6p0fU-CPSB17Bt"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/uploads/images.jpeg",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTU2Mjc4NSwiZXhwIjoxNzM5NjQ5MTg1fQ.lsb4VlMfOlc53rrE6dR4hcXj1J1V9Loj3Ys_nHWBcT2bGU1ItUV-_JjMv1-8AgZsntV4XySrO8TzX9e0_xbhQA"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 5,
+          "request": {
+            "url": "http://localhost:8080/api/img/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get One",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/img/download/2",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "multipartForm",
+              "json": "{\n    \"nameImg\": \"hotel_room.jpg\",\n    \"path\": \"/images/hotel/hotel_room.jpg\"\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": [
+                {
+                  "type": "file",
+                  "name": "file",
+                  "value": [
+                    "C:\\Users\\gerar\\Downloads\\images.jpeg"
+                  ],
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "name",
+                  "value": "imageTest",
+                  "enabled": true
+                }
+              ]
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODM1MjY4MywiZXhwIjoxNzM4NDM5MDgzfQ.AgYeF5J2v5F0usBRg-vs4jIX_PWc9vheqjZs3eqEc8MMUEYbzf6p0fU-CPSB17Bt"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/img/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"detailName\":\"detail Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Room",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/room/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"nameEs\": \"Suite Ejecutiva5\",\n    \"maxCapacity\": 4,\n    \"descriptionEs\": \"Suite de lujo con vista panorámica y jacuzzi.\",\n    \"descriptionEn\":\"suite\",\n    \"price\": 250.00,\n    \"sizeBed\":\"3 mt\",\n    \"categoryRoomId\":1\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0MDA5MDA0OSwiZXhwIjoxNzQwMTc2NDQ5fQ.mrfXPri5guYAhqLxq1YVQ2LWWFGbCtz2sDWGdUabaWGi0zeCLnMxWhei2ap-vsdacN2Eby64cMbli5uT7JXP0g"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get RoomAvailables",
+          "seq": 5,
+          "request": {
+            "url": "http://localhost:8080/api/room/available?initDate=2025-02-11&finishDate=2025-02-12&maxCapacity=1&lang=en",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "initDate",
+                "value": "2025-02-11",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "finishDate",
+                "value": "2025-02-12",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "maxCapacity",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "lang",
+                "value": "en",
+                "type": "query",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTU2Mjc4NSwiZXhwIjoxNzM5NjQ5MTg1fQ.lsb4VlMfOlc53rrE6dR4hcXj1J1V9Loj3Ys_nHWBcT2bGU1ItUV-_JjMv1-8AgZsntV4XySrO8TzX9e0_xbhQA"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/room/?id=1&lang=en",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "lang",
+                "value": "en",
+                "type": "query",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/room/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"detailName\":\"detail Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/room/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Reservation",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/reservation/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"initDate\": \"2025-03-01\",\n    \"finishDate\": \"2025-03-02\",\n    \"cantPeople\": 2,\n    \"name\":\"Gerardo Henriquez\",\n    \"email\": \"cliente@ejemplo.com\",\n    \"phone\": \"+503 2222-3333\",\n    \"payment\": 500.00,\n    \"categoryRoomId\":1\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": ""
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/reservation/3",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/reservation/3",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"initDate\": \"2025-02-15\",\n    \"finishDate\": \"2025-02-16\",\n    \"cantPeople\": 2,\n    \"email\": \"cliente@ejemplo.com\",\n    \"phone\": \"+503 2222-3333\",\n    \"payment\": 550.00,\n    \"categoryId\":3,\n    \"roomId\":3\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/reservation/",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTI5Mzc1NCwiZXhwIjoxNzM5MzgwMTU0fQ.iJBeNUSJoQK9fSVq3uxWmDS6wLHmGfl94OKx9XT1CTuJ9OEVdYnWUJL3oYk2K-tJ9hKCSaUdvaNcAOBrE5lsHQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get Unavailable",
+          "seq": 5,
+          "request": {
+            "url": "http://localhost:8080/api/reservation/unavailable/hotel",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTU2Mjc4NSwiZXhwIjoxNzM5NjQ5MTg1fQ.lsb4VlMfOlc53rrE6dR4hcXj1J1V9Loj3Ys_nHWBcT2bGU1ItUV-_JjMv1-8AgZsntV4XySrO8TzX9e0_xbhQA"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "DetailRoom",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/detail-room/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"detailName\":\"detail test\"\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/detail-room/?lang=es",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "lang",
+                "value": "es",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/detail-room/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"detailName\":\"detail Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/detail-room/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Room_Detail",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/room-detail/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"roomId\": 2,\n    \"detailRoomId\": 5\n}\n\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/room-detail/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"detailName\":\"detail Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/room-detail/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/room-detail/",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Room_Img",
+      "items": [
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/room-img/?roomId=1",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "roomId",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTQ2MjQ4MywiZXhwIjoxNzM5NTQ4ODgzfQ.snBlHFBb0XY1s5RCyEI6KqNb3oypMVKo2KquCWkQGOuGvRkbJPmfHTQo2sIkviA7fmlDk8RzyIW3ptsjhQ_rwQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/room-img/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"roomId\": 2,\n    \"imgId\": 5\n}\n\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/room-img/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/room-img/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"detailName\":\"detail Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Section",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/section/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"title\": \"Eventos\",\n    \"description\": \"Suite Ejecutiva\",\n    \"categoryId\":1\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTM5OTg3OSwiZXhwIjoxNzM5NDg2Mjc5fQ.SuCq08kRfzTF6y5SJXX9qI6gsW5S_xevYFVxdAH9Y_K8Z6L5ci_YWa3mio9IBZW0zoIVwUMDZle0V5UsTqsKTQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/section/",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "categoryId",
+                "value": "2",
+                "type": "query",
+                "enabled": false
+              },
+              {
+                "name": "lang",
+                "value": "es",
+                "type": "query",
+                "enabled": false
+              },
+              {
+                "name": "id",
+                "value": "2",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTQ2MjQ4MywiZXhwIjoxNzM5NTQ4ODgzfQ.snBlHFBb0XY1s5RCyEI6KqNb3oypMVKo2KquCWkQGOuGvRkbJPmfHTQo2sIkviA7fmlDk8RzyIW3ptsjhQ_rwQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/section/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/section/4",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"title\": \"Actualizado\",\n    \"description\": \"Suite Ejecutiva\",\n    \"categoryId\":1\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTQ2MjQ4MywiZXhwIjoxNzM5NTQ4ODgzfQ.snBlHFBb0XY1s5RCyEI6KqNb3oypMVKo2KquCWkQGOuGvRkbJPmfHTQo2sIkviA7fmlDk8RzyIW3ptsjhQ_rwQ"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Menu",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/menu/upload",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "multipartForm",
+              "json": "{\n    \"nameImg\": \"hotel_room.jpg\",\n    \"path\": \"/images/hotel/hotel_room.jpg\"\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": [
+                {
+                  "type": "file",
+                  "name": "file",
+                  "value": [
+                    "C:\\Users\\gerar\\Downloads\\Gerardohenriquez-cv.pdf"
+                  ],
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "name",
+                  "value": "cv",
+                  "enabled": true
+                }
+              ]
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODM1MjY4MywiZXhwIjoxNzM4NDM5MDgzfQ.AgYeF5J2v5F0usBRg-vs4jIX_PWc9vheqjZs3eqEc8MMUEYbzf6p0fU-CPSB17Bt"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 5,
+          "request": {
+            "url": "http://localhost:8080/api/menu/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/menu/",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get One",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/menu/download/1S",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "multipartForm",
+              "json": "{\n    \"nameImg\": \"hotel_room.jpg\",\n    \"path\": \"/images/hotel/hotel_room.jpg\"\n}\n",
+              "formUrlEncoded": [],
+              "multipartForm": [
+                {
+                  "type": "file",
+                  "name": "file",
+                  "value": [
+                    "C:\\Users\\gerar\\Downloads\\images.jpeg"
+                  ],
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "name",
+                  "value": "imageTest",
+                  "enabled": true
+                }
+              ]
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODM1MjY4MywiZXhwIjoxNzM4NDM5MDgzfQ.AgYeF5J2v5F0usBRg-vs4jIX_PWc9vheqjZs3eqEc8MMUEYbzf6p0fU-CPSB17Bt"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/menu/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"detailName\":\"detail Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "Policie",
+      "items": [
+        {
+          "type": "http",
+          "name": "Update",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:8080/api/policies/1",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzU0NiwiZXhwIjoxNzM4MjU3NTc0fQ.4UPqBlUMDq_I7q3fb-IdR-4oXHH-rYgJmLU0dyVOL5MUw9RvcNezl14hgxSIV8kG9ftrA4n0IB3iujZVHebiMQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Delete",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:8080/api/policies/1",
+            "method": "DELETE",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "json": "{\n  \"name\":\"Categoria Test2\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczODI1NzYxOCwiZXhwIjoxNzM4MjU3OTA2fQ.5Nbx2xaljMat8xBHU2CigzATLNq80q3nHqbC0ci_SAgvu5AI90_1hYvAJ6SGweIMgvPdyZ3HrTYJ_GBy5Yc3ag"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Create",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:8080/api/policies/",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \n}",
+              "formUrlEncoded": [],
+              "multipartForm": [
+                {
+                  "type": "text",
+                  "name": "title",
+                  "value": "esto es una prueba3",
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "description",
+                  "value": "esto es una prueba",
+                  "enabled": true
+                },
+                {
+                  "type": "text",
+                  "name": "categoryId",
+                  "value": "1",
+                  "enabled": true
+                },
+                {
+                  "type": "file",
+                  "name": "file",
+                  "value": [
+                    "C:\\Users\\gerar\\Downloads\\yo.jpg"
+                  ],
+                  "enabled": true
+                }
+              ]
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTgyNjIxNywiZXhwIjoxNzM5OTEyNjE3fQ.yy9A_re8fxnLABmNvoqttqfPSz3LxzgXwRPjptdcEVWHGPAsFrDS3sbDlIFRxI_m65EKiV-Fe1pUVtqhsAG5pQ"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get All",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:8080/api/policies/?lang=es&id=1",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "lang",
+                "value": "es",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "id",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"name\":\"Categoria Test\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczOTU2Mjc4NSwiZXhwIjoxNzM5NjQ5MTg1fQ.lsb4VlMfOlc53rrE6dR4hcXj1J1V9Loj3Ys_nHWBcT2bGU1ItUV-_JjMv1-8AgZsntV4XySrO8TzX9e0_xbhQA"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "environments": [],
+  "brunoConfig": {
+    "version": "1",
+    "name": "HotelJB",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  }
+}
