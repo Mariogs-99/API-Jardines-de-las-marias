@@ -28,15 +28,12 @@ public class MenuServiceImpl implements MenuService {
     private final Path uploadDirPath;
 
     public MenuServiceImpl() {
-        String envPath = System.getenv("MULTIMEDIA_STORAGE_PATH");
+        String envPath = "uploads"; // ✅ Carpeta dentro del proyecto
+        this.uploadDirPath = Paths.get(envPath).toAbsolutePath().normalize();
 
-        if (envPath == null || envPath.isBlank()) {
-            envPath = "C:/Users/meev2/Pictures/imagenes-ejemplo"; // Ruta local de prueba
-            System.out.println("⚠️ MULTIMEDIA_STORAGE_PATH no definida. Usando ruta de ejemplo: " + envPath);
-        }
-
-        this.uploadDirPath = Paths.get(envPath);
+        System.out.println("📄 Ruta base para menús PDF: " + this.uploadDirPath);
     }
+
 
     @Override
     public void save(Menu data) throws Exception {

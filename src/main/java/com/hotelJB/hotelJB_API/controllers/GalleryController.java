@@ -34,21 +34,19 @@ public class GalleryController {
     public ResponseEntity<?> uploadAndCreateMultimedia(
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
-            @RequestParam("categoryId") Integer categoryId){
+            @RequestParam("categoryId") Integer categoryId) {
 
         try {
-            // Validar archivo vacío
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body(new MessageDTO("El archivo no puede estar vacío."));
             }
 
-            // Guardar el archivo en el servidor
-            String filePath = fileStorageService.saveFile(file);
+            // Guarda la imagen y obtén solo el nombre del archivo (no la ruta completa)
+            String fileName = fileStorageService.saveFile(file); // ✅ debe devolver solo "imagen.jpg"
 
-            // Crear el objeto DTO con la información de la imagen
-            ImgDTO imgDTO = new ImgDTO(name,filePath,categoryId);
+            // Creamos DTO con solo el nombre del archivo como "path"
+            ImgDTO imgDTO = new ImgDTO(name, fileName, categoryId);
 
-            // Guardar la información en la base de datos
             galleryService.save(imgDTO);
 
             return ResponseEntity.ok(new MessageDTO("Archivo subido y multimedia creado con éxito."));
@@ -57,6 +55,7 @@ public class GalleryController {
                     .body(new MessageDTO("Error al subir el archivo o guardar la información: " + e.getMessage()));
         }
     }
+
 
     @GetMapping("/download/{id}")
     public ResponseEntity<?> downloadFileById(@PathVariable int id) {

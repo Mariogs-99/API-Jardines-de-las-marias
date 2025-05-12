@@ -28,15 +28,12 @@ public class ImgServiceImpl implements ImgService {
     private final Path uploadDirPath;
 
     public ImgServiceImpl() {
-        String envPath = System.getenv("MULTIMEDIA_STORAGE_PATH");
+        String envPath = "uploads"; // ✅ Ruta relativa
+        this.uploadDirPath = Paths.get(envPath).toAbsolutePath().normalize();
 
-        if (envPath == null || envPath.isBlank()) {
-            envPath = "C:/Users/meev2/Pictures/imagenes-ejemplo"; // Ruta de prueba
-            System.out.println("⚠️ MULTIMEDIA_STORAGE_PATH no definida. Usando ruta de ejemplo: " + envPath);
-        }
-
-        this.uploadDirPath = Paths.get(envPath);
+        System.out.println("📂 Ruta de imágenes en ImgService: " + this.uploadDirPath);
     }
+
 
 
     @Override
