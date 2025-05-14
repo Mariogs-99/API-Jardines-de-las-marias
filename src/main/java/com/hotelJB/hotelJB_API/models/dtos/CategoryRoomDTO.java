@@ -8,8 +8,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryRoomDTO {
-    String nameCategoryEs;
-    String nameCategoryEn;
-    String descriptionEs;
-    String descriptionEn;
+
+    private String nameCategoryEs;
+    private String nameCategoryEn;
+    private String descriptionEs;
+    private String descriptionEn;
+
+    // Nuevos campos
+    private Integer maxPeople;
+    private String bedInfo;
+    private String roomSize;
+    private Boolean hasTv;
+    private Boolean hasAc;
+    private Boolean hasPrivateBathroom;
 }

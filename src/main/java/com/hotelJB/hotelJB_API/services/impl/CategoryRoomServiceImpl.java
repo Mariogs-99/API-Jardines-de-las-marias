@@ -25,30 +25,54 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
 
     @Override
     public void save(CategoryRoomDTO data) throws Exception {
-        try{
-            CategoryRoom categoryRoom = new CategoryRoom(data.getNameCategoryEs(), data.getNameCategoryEn(),
-                    data.getDescriptionEs(), data.getDescriptionEn());
+        try {
+            CategoryRoom categoryRoom = new CategoryRoom(
+                    data.getNameCategoryEs(),
+                    data.getNameCategoryEn(),
+                    data.getDescriptionEs(),
+                    data.getDescriptionEn()
+            );
+
+            // Nuevos campos
+            categoryRoom.setMaxPeople(data.getMaxPeople());
+            categoryRoom.setBedInfo(data.getBedInfo());
+            categoryRoom.setRoomSize(data.getRoomSize());
+            categoryRoom.setHasTv(data.getHasTv());
+            categoryRoom.setHasAc(data.getHasAc());
+            categoryRoom.setHasPrivateBathroom(data.getHasPrivateBathroom());
+
             categoryRoomRepository.save(categoryRoom);
-        }catch (Exception e){
-            throw new Exception("Error save Category Room");
+        } catch (Exception e) {
+            throw new Exception("Error al guardar categoría de habitación");
         }
     }
 
+
     @Override
     public void update(CategoryRoomDTO data, int categoryRoomId) throws Exception {
-        try{
+        try {
             CategoryRoom categoryRoom = categoryRoomRepository.findById(categoryRoomId)
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "categoyrRoom"));
+                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "categoryRoom"));
 
             categoryRoom.setNameCategoryEs(data.getNameCategoryEs());
             categoryRoom.setNameCategoryEn(data.getNameCategoryEn());
             categoryRoom.setDescriptionEs(data.getDescriptionEs());
-            categoryRoom.setDescriptionEs(data.getDescriptionEn());
+            categoryRoom.setDescriptionEn(data.getDescriptionEn());
+
+            // Nuevos campos
+            categoryRoom.setMaxPeople(data.getMaxPeople());
+            categoryRoom.setBedInfo(data.getBedInfo());
+            categoryRoom.setRoomSize(data.getRoomSize());
+            categoryRoom.setHasTv(data.getHasTv());
+            categoryRoom.setHasAc(data.getHasAc());
+            categoryRoom.setHasPrivateBathroom(data.getHasPrivateBathroom());
+
             categoryRoomRepository.save(categoryRoom);
-        }catch (Exception e){
-            throw new Exception("Error update Detail Room");
+        } catch (Exception e) {
+            throw new Exception("Error al actualizar categoría de habitación");
         }
     }
+
 
     @Override
     public void delete(int categoryRoomId) throws Exception {
