@@ -77,12 +77,15 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void update(ReservationDTO data, int reservationId) throws Exception {
-        try{
+        try {
             CategoryRoom categoryRoom = categoryRoomRepository.findById(data.getCategoryRoomId())
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND,"Category Room"));
+                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Category Room"));
+
+            Room room = roomRepository.findById(data.getRoomId())
+                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
             Reservation reservation = reservationRepository.findById(reservationId)
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND,"Reservation"));
+                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
 
             reservation.setInitDate(data.getInitDate());
             reservation.setFinishDate(data.getFinishDate());
@@ -91,13 +94,16 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setEmail(data.getEmail());
             reservation.setPhone(data.getPhone());
             reservation.setPayment(data.getPayment());
-            reservation.setCategoryroom(categoryRoom);
+
+            reservation.setCategoryroom(categoryRoom); // ✅ Actualiza categoría
+            reservation.setRoom(room);                 // ✅ Actualiza habitación
 
             reservationRepository.save(reservation);
-        }catch (Exception e){
-            throw new Exception("Error save Reservation");
+        } catch (Exception e) {
+            throw new Exception("Error al actualizar la reserva: " + e.getMessage());
         }
     }
+
 
     @Override
     public void delete(int reservationId) throws Exception {
