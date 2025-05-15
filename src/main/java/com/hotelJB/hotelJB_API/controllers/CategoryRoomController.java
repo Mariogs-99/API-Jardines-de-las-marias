@@ -1,5 +1,6 @@
 package com.hotelJB.hotelJB_API.controllers;
 
+import com.hotelJB.hotelJB_API.models.dtos.CategoryClientViewDTO;
 import com.hotelJB.hotelJB_API.models.dtos.CategoryRoomDTO;
 import com.hotelJB.hotelJB_API.models.dtos.MessageDTO;
 import com.hotelJB.hotelJB_API.services.CategoryRoomService;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/category-room")
@@ -71,4 +74,10 @@ public class CategoryRoomController {
             return new ResponseEntity<>(categoryRoomService.getAll(), HttpStatus.OK);
         }
     }
+
+    @GetMapping("/public-view")
+    public ResponseEntity<List<CategoryClientViewDTO>> getClientView() {
+        return ResponseEntity.ok(categoryRoomService.getCategoriesForClientView());
+    }
+
 }

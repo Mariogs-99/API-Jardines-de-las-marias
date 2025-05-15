@@ -4,6 +4,8 @@
     import lombok.Data;
     import lombok.NoArgsConstructor;
 
+    import java.util.List;
+
     @Data
     @Entity
     @NoArgsConstructor
@@ -38,6 +40,11 @@
         @ManyToOne(fetch = FetchType.EAGER)
         @JoinColumn(name="category_room_id")
         private CategoryRoom categoryRoom;
+
+        @OneToMany(fetch = FetchType.LAZY)
+        @JoinColumn(name = "room_id", referencedColumnName = "room_id")
+        private List<RoomxImg> roomImages;
+
 
         public Room(String nameEs, String nameEn, int maxCapacity, String descriptionEs, String descriptionEn,
                     double price, String sizeBed, CategoryRoom categoryRoom) {

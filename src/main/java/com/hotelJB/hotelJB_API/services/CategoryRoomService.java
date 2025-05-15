@@ -1,5 +1,6 @@
 package com.hotelJB.hotelJB_API.services;
 
+import com.hotelJB.hotelJB_API.models.dtos.CategoryClientViewDTO;
 import com.hotelJB.hotelJB_API.models.dtos.CategoryRoomDTO;
 import com.hotelJB.hotelJB_API.models.entities.CategoryRoom;
 import com.hotelJB.hotelJB_API.models.responses.CategoryRoomResponse;
@@ -14,5 +15,6 @@ public interface CategoryRoomService {
     List<CategoryRoom> getAll();
     Optional<CategoryRoomResponse> findById(int categoryId, String language);
     List<CategoryRoomResponse> findByLanguage(String language);
+    List<CategoryClientViewDTO> getCategoriesForClientView();
 
 }

@@ -1,10 +1,15 @@
 package com.hotelJB.hotelJB_API.services.impl;
 
+import com.hotelJB.hotelJB_API.models.dtos.CategoryClientViewDTO;
 import com.hotelJB.hotelJB_API.models.dtos.CategoryRoomDTO;
 import com.hotelJB.hotelJB_API.models.entities.Category;
 import com.hotelJB.hotelJB_API.models.entities.CategoryRoom;
+import com.hotelJB.hotelJB_API.models.entities.Img;
+import com.hotelJB.hotelJB_API.models.entities.Room;
 import com.hotelJB.hotelJB_API.models.responses.CategoryRoomResponse;
 import com.hotelJB.hotelJB_API.repositories.CategoryRoomRepository;
+import com.hotelJB.hotelJB_API.repositories.ImgRepository;
+import com.hotelJB.hotelJB_API.repositories.RoomRepository;
 import com.hotelJB.hotelJB_API.services.CategoryRoomService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
@@ -12,6 +17,7 @@ import com.hotelJB.hotelJB_API.utils.RequestErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +28,12 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
 
     @Autowired
     private RequestErrorHandler errorHandler;
+
+    @Autowired
+    private RoomRepository roomRepository;
+
+    @Autowired
+    private ImgRepository imgRepository;
 
     @Override
     public void save(CategoryRoomDTO data) throws Exception {
@@ -112,4 +124,53 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
                 "es".equals(language) ? value.getDescriptionEs() : value.getDescriptionEn()
         )).toList();
     }
+
+
+
+    //?--------Categorias con sus precios
+
+    public List<CategoryClientViewDTO> getCategoriesForClientView() {
+        List<CategoryRoom> categories = categoryRoomRepository.findAll();
+
+        return categories.stream().map(category -> {
+            // Obtener la habitación con menor precio de esta categoría
+            Optional<Room> cheapestRoom = roomRepository
+                    .findFirstByCategoryRoom_CategoryRoomIdOrderByPriceAsc(Long.valueOf(category.getCategoryRoomId()));
+
+            CategoryClientViewDTO dto = new CategoryClientViewDTO();
+            dto.setCategoryRoomId(Long.valueOf(category.getCategoryRoomId()));
+            dto.setNameCategoryEs(category.getNameCategoryEs());
+            dto.setDescriptionEs(category.getDescriptionEs());
+            dto.setMaxPeople(category.getMaxPeople());
+            dto.setBedInfo(category.getBedInfo());
+            dto.setRoomSize(category.getRoomSize());
+            dto.setHasTv(Boolean.TRUE.equals(category.getHasTv()));
+            dto.setHasAc(Boolean.TRUE.equals(category.getHasAc()));
+            dto.setHasPrivateBathroom(Boolean.TRUE.equals(category.getHasPrivateBathroom()));
+
+            cheapestRoom.ifPresent(room -> {
+                dto.setMinPrice(BigDecimal.valueOf(room.getPrice()));
+
+                // Buscar la primera imagen real asociada
+                if (room.getRoomImages() != null && !room.getRoomImages().isEmpty()) {
+                    int imgId = room.getRoomImages().get(0).getImgId();
+
+                    Optional<Img> imageOpt = imgRepository.findById(imgId);
+                    if (imageOpt.isPresent()) {
+                        Img img = imageOpt.get();
+                        dto.setImageUrl("http://localhost:8080/" + img.getPath()); // Ej: uploads/xyz.jpg
+                    } else {
+                        dto.setImageUrl("/img/default.jpg"); // Si img_id no existe en tabla img
+                    }
+                } else {
+                    dto.setImageUrl("/img/default.jpg"); // Si no hay imágenes asociadas
+                }
+            });
+
+            return dto;
+        }).toList();
+    }
+
+
+
 }

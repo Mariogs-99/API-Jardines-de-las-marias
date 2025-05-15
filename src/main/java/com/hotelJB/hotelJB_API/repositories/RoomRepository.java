@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface RoomRepository extends JpaRepository<Room,Integer> {
     List<Room> findByCategoryRoom(CategoryRoom categoryRoom);
@@ -18,5 +19,9 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
             "SELECT res.room FROM Reservation res " +
             "WHERE (res.initDate <= :finishDate AND res.finishDate >= :initDate))")
     List<Room> findAvailableRooms(@Param("initDate") LocalDate initDate, @Param("finishDate") LocalDate finishDate);
+
+    Optional<Room> findFirstByCategoryRoom_CategoryRoomIdOrderByPriceAsc(Long categoryRoomId);
+
+
 
 }
