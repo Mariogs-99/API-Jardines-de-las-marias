@@ -1,11 +1,16 @@
 package com.hotelJB.hotelJB_API.services.impl;
 
 import com.hotelJB.hotelJB_API.models.dtos.RoomDTO;
+import com.hotelJB.hotelJB_API.models.dtos.RoomWithImageDTO;
 import com.hotelJB.hotelJB_API.models.entities.CategoryRoom;
+import com.hotelJB.hotelJB_API.models.entities.Img;
 import com.hotelJB.hotelJB_API.models.entities.Room;
+import com.hotelJB.hotelJB_API.models.entities.RoomxImg;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.repositories.CategoryRoomRepository;
+import com.hotelJB.hotelJB_API.repositories.ImgRepository;
 import com.hotelJB.hotelJB_API.repositories.RoomRepository;
+import com.hotelJB.hotelJB_API.repositories.RoomxImgRepository;
 import com.hotelJB.hotelJB_API.services.RoomService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
@@ -13,6 +18,8 @@ import com.hotelJB.hotelJB_API.utils.RequestErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +35,14 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private RequestErrorHandler errorHandler;
+
+    @Autowired
+    private ImgRepository imgRepository;
+
+    @Autowired
+    private RoomxImgRepository roomxImgRepository;
+
+
 
     @Override
     public void save(RoomDTO data) throws Exception {
@@ -138,4 +153,120 @@ public class RoomServiceImpl implements RoomService {
                 value.getCategoryRoom().getCategoryRoomId()
         )).collect(Collectors.toList());
     }
+
+    @Override
+    public void saveRoomWithImage(RoomWithImageDTO dto) {
+        try {
+            // 1. Crear carpeta si no existe
+            String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator;
+            File dir = new File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
+
+            // 2. Crear nombre de archivo
+            String originalFilename = dto.getImage().getOriginalFilename();
+            String fileName = System.currentTimeMillis() + "_" + originalFilename;
+
+            // Ruta absoluta para guardar el archivo
+            String absolutePath = uploadDir + fileName;
+
+            // Ruta relativa que se guarda en la base de datos
+            String relativePath = "uploads/" + fileName;
+
+            // 3. Guardar imagen en el disco
+            File file = new File(absolutePath);
+            dto.getImage().transferTo(file);
+
+            // 4. Guardar imagen en la tabla img
+            Img img = new Img(fileName, relativePath); // ✅ guardar ruta relativa
+            imgRepository.save(img);
+
+            // 5. Buscar categoría
+            CategoryRoom categoryRoom = categoryRoomRepository.findById(dto.getCategoryRoomId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+            // 6. Guardar habitación
+            Room room = new Room(
+                    dto.getNameEs(),
+                    dto.getNameEn(),
+                    dto.getMaxCapacity(),
+                    dto.getDescriptionEs(),
+                    dto.getDescriptionEn(),
+                    dto.getPrice(),
+                    dto.getSizeBed(),
+                    categoryRoom
+            );
+            roomRepository.save(room);
+
+            // 7. Guardar relación en roomximg
+            RoomxImg relation = new RoomxImg(room.getRoomId(), img.getImgId());
+            roomxImgRepository.save(relation);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al guardar habitación con imagen", e);
+        }
+    }
+
+    @Override
+    public void updateRoomWithImage(Integer roomId, RoomWithImageDTO dto) {
+        try {
+            Room room = roomRepository.findById(roomId)
+                    .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
+
+            // Actualizar campos
+            room.setNameEs(dto.getNameEs());
+            room.setNameEn(dto.getNameEn());
+            room.setMaxCapacity(dto.getMaxCapacity());
+            room.setDescriptionEs(dto.getDescriptionEs());
+            room.setDescriptionEn(dto.getDescriptionEn());
+            room.setPrice(dto.getPrice());
+            room.setSizeBed(dto.getSizeBed());
+
+            CategoryRoom category = categoryRoomRepository.findById(dto.getCategoryRoomId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+            room.setCategoryRoom(category);
+
+            // Si subió nueva imagen
+            if (dto.getImage() != null && !dto.getImage().isEmpty()) {
+                // Guardar imagen
+                String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator;
+                File dir = new File(uploadDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                String originalFilename = dto.getImage().getOriginalFilename();
+                String fileName = System.currentTimeMillis() + "_" + originalFilename;
+                String absolutePath = uploadDir + fileName;
+                String relativePath = "uploads/" + fileName;
+
+                File file = new File(absolutePath);
+                dto.getImage().transferTo(file);
+
+                // Guardar imagen en tabla
+                Img img = new Img(fileName, relativePath);
+                imgRepository.save(img);
+
+                // Crear nueva relación (sin eliminar las anteriores, opcional)
+                // Eliminar relaciones anteriores de roomximg
+                roomxImgRepository.deleteByRoomId(roomId);
+
+                    // Crear nueva relación con la nueva imagen
+                RoomxImg relation = new RoomxImg(roomId, img.getImgId());
+                roomxImgRepository.save(relation);
+
+            }
+
+            roomRepository.save(room);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al actualizar habitación con imagen", e);
+        }
+    }
+
+
+
+
+
+
+
 }

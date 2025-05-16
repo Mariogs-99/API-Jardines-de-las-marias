@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name="roomximg")
 public class RoomxImg {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="room_img_id")
@@ -20,8 +21,8 @@ public class RoomxImg {
     @Column(name="img_id")
     private int imgId;
 
-    public RoomxImg(int room_id, int img_id) {
-        this.roomId = room_id;
-        this.imgId = img_id;
+    public RoomxImg(int roomId, int imgId) {
+        this.roomId = roomId;
+        this.imgId = imgId;
     }
 }

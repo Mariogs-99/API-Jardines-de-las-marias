@@ -2,12 +2,14 @@ package com.hotelJB.hotelJB_API.controllers;
 
 import com.hotelJB.hotelJB_API.models.dtos.MessageDTO;
 import com.hotelJB.hotelJB_API.models.dtos.RoomDTO;
+import com.hotelJB.hotelJB_API.models.dtos.RoomWithImageDTO;
 import com.hotelJB.hotelJB_API.models.entities.Room;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.services.RoomService;
 import com.hotelJB.hotelJB_API.utils.RequestErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -93,4 +95,32 @@ public class RoomController {
             return new ResponseEntity<>(new MessageDTO("Error interno del servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping(value = "/with-image", consumes = "multipart/form-data")
+    public ResponseEntity<?> saveWithImage(@ModelAttribute RoomWithImageDTO dto) {
+        try {
+            roomService.saveRoomWithImage(dto);
+            return new ResponseEntity<>(new MessageDTO("Room created with image"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new MessageDTO("Error al guardar habitación con imagen"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(value = "/with-image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateWithImage(@PathVariable Integer id, @ModelAttribute RoomWithImageDTO dto) {
+        try {
+            roomService.updateRoomWithImage(id, dto);
+            return ResponseEntity.ok(new MessageDTO("Habitación actualizada correctamente"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new MessageDTO("Error al actualizar habitación con imagen"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+
+
+
+
 }
