@@ -26,7 +26,11 @@ public class EventController {
     // Obtener un evento por ID
     @GetMapping("/{id}")
     public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.getById(id));
+        EventDTO dto = eventService.getById(id);
+        if (!dto.isActive()) {
+            return ResponseEntity.notFound().build(); // o forbidden si prefieres
+        }
+        return ResponseEntity.ok(dto);
     }
 
     // Crear evento sin imagen (opcional)
@@ -67,4 +71,11 @@ public class EventController {
         eventService.updateEventWithImage(id, dto);
         return ResponseEntity.ok().build();
     }
+
+
+    @GetMapping("/all")
+    public ResponseEntity<List<EventDTO>> getAllForAdmin() {
+        return ResponseEntity.ok(eventService.getAllAdmin());
+    }
+
 }

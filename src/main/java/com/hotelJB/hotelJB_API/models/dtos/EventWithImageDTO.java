@@ -20,4 +20,6 @@ public class EventWithImageDTO {
     private Integer capacity;
     private BigDecimal price;
     private MultipartFile image;
+
+    private boolean active; // Evento activo
 }

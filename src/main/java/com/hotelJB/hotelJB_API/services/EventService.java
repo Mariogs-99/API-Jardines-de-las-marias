@@ -12,6 +12,7 @@ public interface EventService {
     void delete(Long id);
     void updateEventWithImage(Long id, EventWithImageDTO dto);
     void saveEventWithImage(EventWithImageDTO dto);
+    List<EventDTO> getAllAdmin();
 }
 
 

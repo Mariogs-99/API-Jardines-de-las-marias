@@ -80,7 +80,7 @@ public class EventServiceImpl implements EventService {
         dto.setActive(event.isActive());
 
         if (event.getImg() != null) {
-            dto.setImageUrl(event.getImg().getPath()); // ✅ usamos ruta desde entidad Img
+            dto.setImageUrl(event.getImg() != null ? event.getImg().getPath() : null);
         }
 
         return dto;
@@ -123,8 +123,8 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(dto.getEventDate());
             event.setCapacity(dto.getCapacity());
             event.setPrice(dto.getPrice());
-            event.setImg(img); // ✅ relación
-            event.setActive(true);
+            event.setImg(img);
+            event.setActive(dto.isActive());
             event.setCreatedAt(LocalDateTime.now());
             event.setUpdatedAt(LocalDateTime.now());
 
@@ -147,7 +147,7 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(dto.getEventDate());
             event.setCapacity(dto.getCapacity());
             event.setPrice(dto.getPrice());
-            event.setActive(true);
+            event.setActive(dto.isActive());
             event.setUpdatedAt(LocalDateTime.now());
 
             if (dto.getImage() != null && !dto.getImage().isEmpty()) {
@@ -176,4 +176,20 @@ public class EventServiceImpl implements EventService {
             throw new RuntimeException("Error al actualizar evento con imagen", e);
         }
     }
+
+    // Eventos activos del lado del cliente
+
+    public List<Event> getPublicEvents() {
+        return eventRepository.findByActiveTrueOrderByEventDateAsc();
+    }
+
+    // eventos activos o no activos del lado del administrador
+
+    public List<EventDTO> getAllAdmin() {
+        return eventRepository.findAll().stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
 }
