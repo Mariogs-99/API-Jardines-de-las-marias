@@ -18,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/reservation")
 public class ReservationController {
+
     @Autowired
     private ReservationService reservationService;
 
@@ -34,42 +35,41 @@ public class ReservationController {
             reservationService.save(data);
             return new ResponseEntity<>(new MessageDTO("Reservation created"), HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.BAD_REQUEST);  // Error específico
+            return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody ReservationDTO data, @PathVariable Integer id, BindingResult validations) throws Exception{
+    public ResponseEntity<?> update(@RequestBody ReservationDTO data, @PathVariable Integer id, BindingResult validations) throws Exception {
         if (validations.hasErrors()) {
             return new ResponseEntity<>(errorHandler.mapErrors(validations.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }
 
-        try{
-            reservationService.update(data,id);
-            return new ResponseEntity<>(new MessageDTO("Reservation created"), HttpStatus.OK);
+        try {
+            reservationService.update(data, id);
+            return new ResponseEntity<>(new MessageDTO("Reservation updated"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id) throws Exception{
-        try{
+    public ResponseEntity<?> delete(@PathVariable Integer id) throws Exception {
+        try {
             reservationService.delete(id);
             return new ResponseEntity<>(new MessageDTO("Reservation deleted"), HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/")
-    public ResponseEntity<?> getAll(@RequestParam(required = false) Integer id){
-        if(id != null){
+    public ResponseEntity<?> getAll(@RequestParam(required = false) Integer id) {
+        if (id != null) {
             return new ResponseEntity<>(reservationService.findById(id), HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<>(reservationService.getAll(), HttpStatus.OK);
         }
     }
@@ -88,5 +88,4 @@ public class ReservationController {
             return new ResponseEntity<>(new MessageDTO("Error interno del servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

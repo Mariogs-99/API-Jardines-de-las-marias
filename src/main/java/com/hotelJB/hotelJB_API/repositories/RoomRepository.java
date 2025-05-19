@@ -22,6 +22,23 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
 
     Optional<Room> findFirstByCategoryRoom_CategoryRoomIdOrderByPriceAsc(Long categoryRoomId);
 
+    @Query("""
+    SELECT r FROM Room r
+    WHERE r.quantity > (
+        SELECT COALESCE(SUM(res.quantityReserved), 0)
+        FROM Reservation res
+        WHERE res.room = r
+        AND (
+            res.initDate <= :finishDate AND res.finishDate >= :initDate
+        )
+    )
+""")
+    List<Room> findRoomsWithAvailableQuantity(
+            @Param("initDate") LocalDate initDate,
+            @Param("finishDate") LocalDate finishDate
+    );
+
+
 
 
 }

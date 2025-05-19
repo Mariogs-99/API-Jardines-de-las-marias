@@ -12,6 +12,8 @@ public class RoomWithImageDTO {
     private String descriptionEn;
     private double price;
     private String sizeBed;
-    private Integer categoryRoomId;
+    private int categoryRoomId;
+    private int quantity;
     private MultipartFile image;
+
 }

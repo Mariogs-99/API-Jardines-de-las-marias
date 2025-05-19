@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name="reservation")
 public class Reservation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="reservation_id")
@@ -38,6 +39,9 @@ public class Reservation {
     @Column(name="payment")
     private double payment;
 
+    @Column(name="quantity_reserved") // ✅ Nuevo campo
+    private int quantityReserved;
+
     @Column(name="creation_date", updatable = false, insertable = false)
     private LocalDateTime creationDate;
 
@@ -50,15 +54,17 @@ public class Reservation {
     private Room room;
 
     public Reservation(LocalDate initDate, LocalDate finishDate, int cantPeople, String name, String email,
-                       String phone, double payment, CategoryRoom categoryroom, Room room) {
+                       String phone, double payment, CategoryRoom categoryroom, Room room, int quantityReserved) {
         this.initDate = initDate;
         this.finishDate = finishDate;
         this.cantPeople = cantPeople;
+        this.name = name;
         this.email = email;
         this.name = name;
         this.phone = phone;
         this.payment = payment;
         this.categoryroom = categoryroom;
         this.room = room;
+        this.quantityReserved = quantityReserved;
     }
 }

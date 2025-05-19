@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/room")
 public class RoomController {
+
     @Autowired
     private RoomService roomService;
 
@@ -27,54 +28,57 @@ public class RoomController {
     private RequestErrorHandler errorHandler;
 
     @PostMapping("/")
-    public ResponseEntity<?> save(@RequestBody RoomDTO data, BindingResult validations) throws Exception{
+    public ResponseEntity<?> save(@RequestBody RoomDTO data, BindingResult validations) throws Exception {
         if (validations.hasErrors()) {
             return new ResponseEntity<>(errorHandler.mapErrors(validations.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }
 
-        try{
+        try {
             roomService.save(data);
-            return new ResponseEntity<>(new MessageDTO("Room created"), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody RoomDTO data, @PathVariable Integer id, BindingResult validations) throws Exception{
-        if (validations.hasErrors()) {
-            return new ResponseEntity<>(errorHandler.mapErrors(validations.getFieldErrors()), HttpStatus.BAD_REQUEST);
-        }
-
-        try{
-            roomService.update(data,id);
             return new ResponseEntity<>(new MessageDTO("Room created"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@RequestBody RoomDTO data, @PathVariable Integer id, BindingResult validations) throws Exception {
+        if (validations.hasErrors()) {
+            return new ResponseEntity<>(errorHandler.mapErrors(validations.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            roomService.update(data, id);
+            return new ResponseEntity<>(new MessageDTO("Room updated"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id) throws Exception{
-        try{
+    public ResponseEntity<?> delete(@PathVariable Integer id) throws Exception {
+        try {
             roomService.delete(id);
             return new ResponseEntity<>(new MessageDTO("Room deleted"), HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/")
     public ResponseEntity<?> getAll(@RequestParam(required = false) Integer id,
-                                    @RequestParam(required = false) String lang){
-        if(id != null && lang != null){
-            return new ResponseEntity<>(roomService.findById(id, lang), HttpStatus.OK);
-        }
-        else if(lang != null){
-            return new ResponseEntity<>(roomService.findByLanguage(lang), HttpStatus.OK);
-
-        }else{
-            return new ResponseEntity<>(roomService.getAll(), HttpStatus.OK);
+                                    @RequestParam(required = false) String lang) {
+        try {
+            if (id != null && lang != null) {
+                return new ResponseEntity<>(roomService.findById(id, lang), HttpStatus.OK);
+            } else if (lang != null) {
+                return new ResponseEntity<>(roomService.findByLanguage(lang), HttpStatus.OK);
+            } else {
+                // ⚠️ Evitar exponer entidades directamente
+                return new ResponseEntity<>(roomService.findByLanguage("es"), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -112,15 +116,8 @@ public class RoomController {
             roomService.updateRoomWithImage(id, dto);
             return ResponseEntity.ok(new MessageDTO("Habitación actualizada correctamente"));
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseEntity<>(new MessageDTO("Error al actualizar habitación con imagen"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
-
-
-
-
 }
+

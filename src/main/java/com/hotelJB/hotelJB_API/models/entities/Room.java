@@ -1,60 +1,67 @@
-    package com.hotelJB.hotelJB_API.models.entities;
+package com.hotelJB.hotelJB_API.models.entities;
 
-    import jakarta.persistence.*;
-    import lombok.Data;
-    import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    import java.util.List;
+@Data
+@Entity
+@NoArgsConstructor
+@Table(name = "room")
+public class Room {
 
-    @Data
-    @Entity
-    @NoArgsConstructor
-    @Table(name="room")
-    public class Room {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name="room_id")
-        private int roomId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "room_id")
+    private int roomId;
 
-        @Column(name="name_es")
-        private String nameEs;
+    @Column(name = "name_es")
+    private String nameEs;
 
-        @Column(name="name_en")
-        private String nameEn;
+    @Column(name = "name_en")
+    private String nameEn;
 
-        @Column(name="max_capacity")
-        private int maxCapacity;
+    @Column(name = "max_capacity")
+    private int maxCapacity;
 
-        @Column(name="description_es")
-        private String descriptionEs;
+    @Column(name = "description_es")
+    private String descriptionEs;
 
-        @Column(name="description_en")
-        private String descriptionEn;
+    @Column(name = "description_en")
+    private String descriptionEn;
 
-        @Column(name="price")
-        private double price;
+    @Column(name = "price")
+    private double price;
 
-        @Column(name="size_bed")
-        private String sizeBed;
+    @Column(name = "size_bed")
+    private String sizeBed;
 
-        @ManyToOne(fetch = FetchType.EAGER)
-        @JoinColumn(name="category_room_id")
-        private CategoryRoom categoryRoom;
+    @Column(name = "quantity")
+    private Integer quantity;
 
-        @OneToMany(fetch = FetchType.LAZY)
-        @JoinColumn(name = "room_id", referencedColumnName = "room_id")
-        private List<RoomxImg> roomImages;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_room_id")
+    private CategoryRoom categoryRoom;
 
+    // ✅ NUEVO: relación directa con una sola imagen
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "img_id")
+    private Img img;
 
-        public Room(String nameEs, String nameEn, int maxCapacity, String descriptionEs, String descriptionEn,
-                    double price, String sizeBed, CategoryRoom categoryRoom) {
-            this.nameEs = nameEs;
-            this.nameEn = nameEn;
-            this.maxCapacity = maxCapacity;
-            this.descriptionEs = descriptionEs;
-            this.descriptionEn = descriptionEn;
-            this.price = price;
-            this.sizeBed = sizeBed;
-            this.categoryRoom = categoryRoom;
-        }
+    public Room(String nameEs, String nameEn, int maxCapacity, String descriptionEs, String descriptionEn,
+                double price, String sizeBed, CategoryRoom categoryRoom, Integer quantity) {
+        this.nameEs = nameEs;
+        this.nameEn = nameEn;
+        this.maxCapacity = maxCapacity;
+        this.descriptionEs = descriptionEs;
+        this.descriptionEn = descriptionEn;
+        this.price = price;
+        this.sizeBed = sizeBed;
+        this.categoryRoom = categoryRoom;
+        this.quantity = quantity;
     }
+
+    public void setImg(Img img) {
+        this.img = img;
+    }
+}

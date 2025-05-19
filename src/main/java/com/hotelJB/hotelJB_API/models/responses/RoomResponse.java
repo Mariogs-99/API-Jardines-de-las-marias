@@ -15,4 +15,8 @@ public class RoomResponse {
     private double price;
     private String sizeBed;
     private int categoryRoomId;
+
+    //Nueva información útil para mostrar
+    private int quantity;      // total de habitaciones de este tipo
+    private String imageUrl;   // ruta de la imagen asociada (ej: uploads/imagen.jpg)
 }

@@ -10,15 +10,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoomService {
+
+    // CRUD
     void save(RoomDTO data) throws Exception;
     void update(RoomDTO data, int roomId) throws Exception;
     void delete(int roomId) throws Exception;
+
+    // Admin
     List<Room> getAll();
     Optional<RoomResponse> findById(int roomId, String language);
-    List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int maxCapacity, String language);
     List<RoomResponse> findByLanguage(String language);
+
+    // Cliente - solo habitaciones disponibles en fechas
+    List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int maxCapacity, String language);
+
+    // Crear y actualizar con imagen
     void saveRoomWithImage(RoomWithImageDTO dto);
     void updateRoomWithImage(Integer roomId, RoomWithImageDTO dto);
-
-
 }

@@ -2,7 +2,6 @@ package com.hotelJB.hotelJB_API.services.impl;
 
 import com.hotelJB.hotelJB_API.models.dtos.CategoryClientViewDTO;
 import com.hotelJB.hotelJB_API.models.dtos.CategoryRoomDTO;
-import com.hotelJB.hotelJB_API.models.entities.Category;
 import com.hotelJB.hotelJB_API.models.entities.CategoryRoom;
 import com.hotelJB.hotelJB_API.models.entities.Img;
 import com.hotelJB.hotelJB_API.models.entities.Room;
@@ -23,6 +22,7 @@ import java.util.Optional;
 
 @Service
 public class CategoryRoomServiceImpl implements CategoryRoomService {
+
     @Autowired
     private CategoryRoomRepository categoryRoomRepository;
 
@@ -45,7 +45,6 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
                     data.getDescriptionEn()
             );
 
-            // Nuevos campos
             categoryRoom.setMaxPeople(data.getMaxPeople());
             categoryRoom.setBedInfo(data.getBedInfo());
             categoryRoom.setRoomSize(data.getRoomSize());
@@ -59,7 +58,6 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
         }
     }
 
-
     @Override
     public void update(CategoryRoomDTO data, int categoryRoomId) throws Exception {
         try {
@@ -70,8 +68,6 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
             categoryRoom.setNameCategoryEn(data.getNameCategoryEn());
             categoryRoom.setDescriptionEs(data.getDescriptionEs());
             categoryRoom.setDescriptionEn(data.getDescriptionEn());
-
-            // Nuevos campos
             categoryRoom.setMaxPeople(data.getMaxPeople());
             categoryRoom.setBedInfo(data.getBedInfo());
             categoryRoom.setRoomSize(data.getRoomSize());
@@ -85,15 +81,14 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
         }
     }
 
-
     @Override
     public void delete(int categoryRoomId) throws Exception {
-        try{
+        try {
             CategoryRoom categoryRoom = categoryRoomRepository.findById(categoryRoomId)
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "CategoryRoom"));
 
             categoryRoomRepository.delete(categoryRoom);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Error delete categoryRoom");
         }
     }
@@ -125,20 +120,17 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
         )).toList();
     }
 
-
-
-    //?--------Categorias con sus precios
-
+    // ✅ Adaptado al nuevo modelo Room → Img
+    @Override
     public List<CategoryClientViewDTO> getCategoriesForClientView() {
         List<CategoryRoom> categories = categoryRoomRepository.findAll();
 
         return categories.stream().map(category -> {
-            // Obtener la habitación con menor precio de esta categoría
             Optional<Room> cheapestRoom = roomRepository
-                    .findFirstByCategoryRoom_CategoryRoomIdOrderByPriceAsc(Long.valueOf(category.getCategoryRoomId()));
+                    .findFirstByCategoryRoom_CategoryRoomIdOrderByPriceAsc((long) category.getCategoryRoomId());
 
             CategoryClientViewDTO dto = new CategoryClientViewDTO();
-            dto.setCategoryRoomId(Long.valueOf(category.getCategoryRoomId()));
+            dto.setCategoryRoomId((long) category.getCategoryRoomId());
             dto.setNameCategoryEs(category.getNameCategoryEs());
             dto.setDescriptionEs(category.getDescriptionEs());
             dto.setMaxPeople(category.getMaxPeople());
@@ -151,26 +143,15 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
             cheapestRoom.ifPresent(room -> {
                 dto.setMinPrice(BigDecimal.valueOf(room.getPrice()));
 
-                // Buscar la primera imagen real asociada
-                if (room.getRoomImages() != null && !room.getRoomImages().isEmpty()) {
-                    int imgId = room.getRoomImages().get(0).getImgId();
-
-                    Optional<Img> imageOpt = imgRepository.findById(imgId);
-                    if (imageOpt.isPresent()) {
-                        Img img = imageOpt.get();
-                        dto.setImageUrl("http://localhost:8080/" + img.getPath()); // Ej: uploads/xyz.jpg
-                    } else {
-                        dto.setImageUrl("/img/default.jpg"); // Si img_id no existe en tabla img
-                    }
+                Img img = room.getImg();
+                if (img != null) {
+                    dto.setImageUrl("http://localhost:8080/" + img.getPath());
                 } else {
-                    dto.setImageUrl("/img/default.jpg"); // Si no hay imágenes asociadas
+                    dto.setImageUrl("/img/default.jpg");
                 }
             });
 
             return dto;
         }).toList();
     }
-
-
-
 }

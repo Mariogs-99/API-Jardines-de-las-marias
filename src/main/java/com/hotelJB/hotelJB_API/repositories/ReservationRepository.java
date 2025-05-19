@@ -11,14 +11,19 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.room = :room " +
-            "AND (r.initDate < :finishDate AND r.finishDate > :initDate)")
-    long countOverlappingReservations(@Param("room") Room room,
-                                      @Param("initDate") LocalDate initDate,
-                                      @Param("finishDate") LocalDate finishDate);
+    // ✅ Nueva: total de habitaciones reservadas en rango de fechas
+    @Query("""
+        SELECT COALESCE(SUM(r.quantityReserved), 0) FROM Reservation r
+        WHERE r.room = :room
+        AND (r.initDate < :finishDate AND r.finishDate > :initDate)
+    """)
+    int countReservedQuantityByRoomAndDates(
+            @Param("room") Room room,
+            @Param("initDate") LocalDate initDate,
+            @Param("finishDate") LocalDate finishDate
+    );
 
+    // 🔁 Opcional: esto puedes eliminarlo si ya no lo usas
     @Query("SELECT r.initDate, r.finishDate FROM Reservation r")
     List<Object[]> findAllReservedDates();
-
 }
-

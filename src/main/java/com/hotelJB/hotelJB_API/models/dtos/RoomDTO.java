@@ -16,5 +16,8 @@ public class RoomDTO {
     private double price;
     private String sizeBed;
     private int categoryRoomId;
+    private int quantity;
 
+    //Ruta de imagen para el frontend
+    private String imageUrl;
 }

@@ -19,6 +19,7 @@ import java.util.*;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
+
     @Autowired
     private ReservationRepository reservationRepository;
 
@@ -34,46 +35,46 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void save(ReservationDTO data) throws Exception {
         try {
-            // Buscar la categoría de habitación
+            // 1. Verificar categoría
             CategoryRoom categoryRoom = categoryRoomRepository.findById(data.getCategoryRoomId())
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Category Room"));
 
-            // Obtener todas las habitaciones disponibles en esa categoría
-            List<Room> availableRooms = roomRepository.findByCategoryRoom(categoryRoom);
+            // 2. Buscar habitación
+            Room room = roomRepository.findById(data.getRoomId())
+                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
-            if (availableRooms.isEmpty()) {
-                throw new CustomException(ErrorType.NOT_AVAILABLE, "No hay habitaciones disponibles en esta categoría.");
+            // 3. Validar disponibilidad con quantityReserved
+            int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
+                    room, data.getInitDate(), data.getFinishDate());
+
+            int available = room.getQuantity() - totalReserved;
+
+            if (available < data.getQuantityReserved()) {
+                throw new CustomException(ErrorType.NOT_AVAILABLE, "No hay suficientes habitaciones disponibles.");
             }
 
-            // Verificar disponibilidad por fecha
-            Room selectedRoom = null;
-            for (Room room : availableRooms) {
-                long count = reservationRepository.countOverlappingReservations(room, data.getInitDate(), data.getFinishDate());
-                if (count == 0) {
-                    selectedRoom = room;
-                    break;
-                }
-            }
-
-            if (selectedRoom == null) {
-                throw new CustomException(ErrorType.NOT_AVAILABLE, "Todas las habitaciones de esta categoría están ocupadas en este período.");
-            }
-
-            // Crear y guardar la reserva
+            // 4. Crear y guardar la reserva
             Reservation reservation = new Reservation(
-                    data.getInitDate(), data.getFinishDate(), data.getCantPeople(),data.getName(),
-                    data.getEmail(), data.getPhone(), data.getPayment(), categoryRoom, selectedRoom
+                    data.getInitDate(),
+                    data.getFinishDate(),
+                    data.getCantPeople(),
+                    data.getName(),
+                    data.getEmail(),
+                    data.getPhone(),
+                    data.getPayment(),
+                    categoryRoom,
+                    room,
+                    data.getQuantityReserved()
             );
 
             reservationRepository.save(reservation);
 
         } catch (CustomException e) {
-            throw e;  // Excepción específica, se maneja en el controlador
+            throw e;
         } catch (Exception e) {
             throw new Exception("Error al guardar la reserva: " + e.getMessage());
         }
     }
-
 
     @Override
     public void update(ReservationDTO data, int reservationId) throws Exception {
@@ -94,9 +95,9 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setEmail(data.getEmail());
             reservation.setPhone(data.getPhone());
             reservation.setPayment(data.getPayment());
-
-            reservation.setCategoryroom(categoryRoom); // ✅ Actualiza categoría
-            reservation.setRoom(room);                 // ✅ Actualiza habitación
+            reservation.setCategoryroom(categoryRoom);
+            reservation.setRoom(room);
+            reservation.setQuantityReserved(data.getQuantityReserved());
 
             reservationRepository.save(reservation);
         } catch (Exception e) {
@@ -104,15 +105,14 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-
     @Override
     public void delete(int reservationId) throws Exception {
-        try{
+        try {
             Reservation reservation = reservationRepository.findById(reservationId)
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
 
             reservationRepository.delete(reservation);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Error delete reservation");
         }
     }
@@ -129,16 +129,12 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<Map<String, LocalDate>> getFullyBookedDatesForHotel() {
-        // Obtener todas las fechas de las reservas
         List<Object[]> reservedDates = reservationRepository.findAllReservedDates();
 
-        if (reservedDates.isEmpty()) {
-            return Collections.emptyList();
-        }
+        if (reservedDates.isEmpty()) return Collections.emptyList();
 
         long totalRooms = roomRepository.count();
 
-        // Map para contar cuántas reservas hay por día
         Map<LocalDate, Integer> reservationCountByDate = new HashMap<>();
 
         for (Object[] dates : reservedDates) {
@@ -155,7 +151,7 @@ public class ReservationServiceImpl implements ReservationService {
         List<Map<String, LocalDate>> fullyBookedDates = new ArrayList<>();
 
         for (Map.Entry<LocalDate, Integer> entry : reservationCountByDate.entrySet()) {
-            if (entry.getValue() >= totalRooms) { // Si el número de reservas en esa fecha >= total de habitaciones
+            if (entry.getValue() >= totalRooms) {
                 Map<String, LocalDate> dateMap = new HashMap<>();
                 dateMap.put("fullyBookedDate", entry.getKey());
                 fullyBookedDates.add(dateMap);
@@ -164,5 +160,4 @@ public class ReservationServiceImpl implements ReservationService {
 
         return fullyBookedDates;
     }
-
 }

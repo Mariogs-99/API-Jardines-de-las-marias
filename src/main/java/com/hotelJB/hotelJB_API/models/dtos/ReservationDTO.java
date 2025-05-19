@@ -19,4 +19,5 @@ public class ReservationDTO {
     private double payment;
     private int categoryRoomId;
     private int roomId;
+    private int quantityReserved;
 }
