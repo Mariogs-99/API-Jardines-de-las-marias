@@ -26,5 +26,8 @@ public interface RoomService {
 
     // Crear y actualizar con imagen
     void saveRoomWithImage(RoomWithImageDTO dto);
+
+    List<RoomResponse> getAllWithCategory();
+
     void updateRoomWithImage(Integer roomId, RoomWithImageDTO dto);
 }

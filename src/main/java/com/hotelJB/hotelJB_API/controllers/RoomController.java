@@ -119,5 +119,11 @@ public class RoomController {
             return new ResponseEntity<>(new MessageDTO("Error al actualizar habitación con imagen"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<RoomResponse>> getAllRoomsWithCategory() {
+        return ResponseEntity.ok(roomService.getAllWithCategory());
+    }
+
 }
 

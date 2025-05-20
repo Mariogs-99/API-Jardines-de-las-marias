@@ -199,6 +199,24 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public List<RoomResponse> getAllWithCategory() {
+        return roomRepository.findAll().stream()
+                .map(room -> new RoomResponse(
+                        room.getRoomId(),
+                        room.getNameEs(), // puedes usar idioma si deseas
+                        room.getMaxCapacity(),
+                        room.getDescriptionEs(),
+                        room.getPrice(),
+                        room.getSizeBed(),
+                        room.getCategoryRoom() != null ? room.getCategoryRoom().getCategoryRoomId() : null,
+                        room.getQuantity(),
+                        room.getImg() != null ? room.getImg().getPath() : null
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
     public void updateRoomWithImage(Integer roomId, RoomWithImageDTO dto) {
         try {
             Room room = roomRepository.findById(roomId)

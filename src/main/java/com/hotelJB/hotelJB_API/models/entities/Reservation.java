@@ -39,32 +39,33 @@ public class Reservation {
     @Column(name="payment")
     private double payment;
 
-    @Column(name="quantity_reserved") // ✅ Nuevo campo
+    @Column(name="quantity_reserved") //Nuevo campo
     private int quantityReserved;
 
-    @Column(name="creation_date", updatable = false, insertable = false)
+    @Column(name = "creation_date", updatable = false)
     private LocalDateTime creationDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="category_room_id")
-    private CategoryRoom categoryroom;
+    @PrePersist
+    public void prePersist() {
+        this.creationDate = LocalDateTime.now();
+    }
+
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="room_id")
     private Room room;
 
     public Reservation(LocalDate initDate, LocalDate finishDate, int cantPeople, String name, String email,
-                       String phone, double payment, CategoryRoom categoryroom, Room room, int quantityReserved) {
+                       String phone, double payment, Room room, int quantityReserved) {
         this.initDate = initDate;
         this.finishDate = finishDate;
         this.cantPeople = cantPeople;
         this.name = name;
         this.email = email;
-        this.name = name;
         this.phone = phone;
         this.payment = payment;
-        this.categoryroom = categoryroom;
         this.room = room;
         this.quantityReserved = quantityReserved;
     }
+
 }

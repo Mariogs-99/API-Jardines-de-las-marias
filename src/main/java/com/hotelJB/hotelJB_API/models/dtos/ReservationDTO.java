@@ -17,7 +17,6 @@ public class ReservationDTO {
     private String email;
     private String phone;
     private double payment;
-    private int categoryRoomId;
     private int roomId;
     private int quantityReserved;
 }

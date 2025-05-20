@@ -1,16 +1,13 @@
 package com.hotelJB.hotelJB_API.services.impl;
 
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
-import com.hotelJB.hotelJB_API.models.entities.CategoryRoom;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import com.hotelJB.hotelJB_API.models.entities.Room;
-import com.hotelJB.hotelJB_API.repositories.CategoryRoomRepository;
 import com.hotelJB.hotelJB_API.repositories.ReservationRepository;
 import com.hotelJB.hotelJB_API.repositories.RoomRepository;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
-import com.hotelJB.hotelJB_API.utils.RequestErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,26 +21,16 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private CategoryRoomRepository categoryRoomRepository;
-
-    @Autowired
     private RoomRepository roomRepository;
-
-    @Autowired
-    private RequestErrorHandler errorHandler;
 
     @Override
     public void save(ReservationDTO data) throws Exception {
         try {
-            // 1. Verificar categoría
-            CategoryRoom categoryRoom = categoryRoomRepository.findById(data.getCategoryRoomId())
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Category Room"));
-
-            // 2. Buscar habitación
+            // 1. Buscar habitación
             Room room = roomRepository.findById(data.getRoomId())
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
-            // 3. Validar disponibilidad con quantityReserved
+            // 2. Validar disponibilidad
             int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
                     room, data.getInitDate(), data.getFinishDate());
 
@@ -53,7 +40,7 @@ public class ReservationServiceImpl implements ReservationService {
                 throw new CustomException(ErrorType.NOT_AVAILABLE, "No hay suficientes habitaciones disponibles.");
             }
 
-            // 4. Crear y guardar la reserva
+            // 3. Crear y guardar la reserva
             Reservation reservation = new Reservation(
                     data.getInitDate(),
                     data.getFinishDate(),
@@ -62,7 +49,6 @@ public class ReservationServiceImpl implements ReservationService {
                     data.getEmail(),
                     data.getPhone(),
                     data.getPayment(),
-                    categoryRoom,
                     room,
                     data.getQuantityReserved()
             );
@@ -79,9 +65,6 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void update(ReservationDTO data, int reservationId) throws Exception {
         try {
-            CategoryRoom categoryRoom = categoryRoomRepository.findById(data.getCategoryRoomId())
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Category Room"));
-
             Room room = roomRepository.findById(data.getRoomId())
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
@@ -95,7 +78,6 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setEmail(data.getEmail());
             reservation.setPhone(data.getPhone());
             reservation.setPayment(data.getPayment());
-            reservation.setCategoryroom(categoryRoom);
             reservation.setRoom(room);
             reservation.setQuantityReserved(data.getQuantityReserved());
 
