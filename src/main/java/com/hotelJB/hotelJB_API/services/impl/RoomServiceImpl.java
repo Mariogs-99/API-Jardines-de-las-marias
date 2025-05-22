@@ -5,6 +5,7 @@ import com.hotelJB.hotelJB_API.models.dtos.RoomWithImageDTO;
 import com.hotelJB.hotelJB_API.models.entities.CategoryRoom;
 import com.hotelJB.hotelJB_API.models.entities.Img;
 import com.hotelJB.hotelJB_API.models.entities.Room;
+import com.hotelJB.hotelJB_API.models.responses.CategoryRoomResponse;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.repositories.CategoryRoomRepository;
 import com.hotelJB.hotelJB_API.repositories.ImgRepository;
@@ -44,10 +45,10 @@ public class RoomServiceImpl implements RoomService {
 
         Room room = new Room(
                 data.getNameEs(),
-                data.getNameEn(),
+                null,
                 data.getMaxCapacity(),
                 data.getDescriptionEs(),
-                data.getDescriptionEn(),
+                null,
                 data.getPrice(),
                 data.getSizeBed(),
                 categoryRoom,
@@ -66,10 +67,8 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
         room.setNameEs(data.getNameEs());
-        room.setNameEn(data.getNameEn());
         room.setMaxCapacity(data.getMaxCapacity());
         room.setDescriptionEs(data.getDescriptionEs());
-        room.setDescriptionEn(data.getDescriptionEn());
         room.setPrice(data.getPrice());
         room.setSizeBed(data.getSizeBed());
         room.setQuantity(data.getQuantity());
@@ -93,77 +92,57 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Optional<RoomResponse> findById(int roomId, String lang) {
-        Optional<Room> roomOpt = roomRepository.findById(roomId);
-
-        return roomOpt.map(room -> {
-            CategoryRoom cat = room.getCategoryRoom();
-            return new RoomResponse(
-                    room.getRoomId(),
-                    "es".equals(lang) ? room.getNameEs() : room.getNameEn(),
-                    room.getMaxCapacity(),
-                    "es".equals(lang) ? room.getDescriptionEs() : room.getDescriptionEn(),
-                    room.getPrice(),
-                    room.getSizeBed(),
-                    cat.getCategoryRoomId(),
-                    room.getQuantity(),
-                    room.getImg() != null ? room.getImg().getPath() : null,
-                    cat.getBedInfo(),
-                    cat.getRoomSize(),
-                    Boolean.TRUE.equals(cat.getHasTv()),
-                    Boolean.TRUE.equals(cat.getHasAc()),
-                    Boolean.TRUE.equals(cat.getHasPrivateBathroom())
-            );
-        });
+        return roomRepository.findById(roomId).map(this::mapToRoomResponse);
     }
 
     @Override
     public List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int maxCapacity, String lang) {
-        List<Room> availableRooms = roomRepository.findRoomsWithAvailableQuantity(initDate, finishDate);
-
-        return availableRooms.stream()
+        return roomRepository.findRoomsWithAvailableQuantity(initDate, finishDate).stream()
                 .filter(room -> room.getMaxCapacity() >= maxCapacity)
-                .map(room -> {
-                    CategoryRoom cat = room.getCategoryRoom();
-                    return new RoomResponse(
-                            room.getRoomId(),
-                            "es".equals(lang) ? room.getNameEs() : room.getNameEn(),
-                            room.getMaxCapacity(),
-                            "es".equals(lang) ? room.getDescriptionEs() : room.getDescriptionEn(),
-                            room.getPrice(),
-                            room.getSizeBed(),
-                            cat.getCategoryRoomId(),
-                            room.getQuantity(),
-                            room.getImg() != null ? room.getImg().getPath() : null,
-                            cat.getBedInfo(),
-                            cat.getRoomSize(),
-                            Boolean.TRUE.equals(cat.getHasTv()),
-                            Boolean.TRUE.equals(cat.getHasAc()),
-                            Boolean.TRUE.equals(cat.getHasPrivateBathroom())
-                    );
-                }).collect(Collectors.toList());
+                .map(this::mapToRoomResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<RoomResponse> findByLanguage(String language) {
-        return roomRepository.findAll().stream().map(room -> {
-            CategoryRoom cat = room.getCategoryRoom();
-            return new RoomResponse(
-                    room.getRoomId(),
-                    "es".equals(language) ? room.getNameEs() : room.getNameEn(),
-                    room.getMaxCapacity(),
-                    "es".equals(language) ? room.getDescriptionEs() : room.getDescriptionEn(),
-                    room.getPrice(),
-                    room.getSizeBed(),
-                    cat.getCategoryRoomId(),
-                    room.getQuantity(),
-                    room.getImg() != null ? room.getImg().getPath() : null,
-                    cat.getBedInfo(),
-                    cat.getRoomSize(),
-                    Boolean.TRUE.equals(cat.getHasTv()),
-                    Boolean.TRUE.equals(cat.getHasAc()),
-                    Boolean.TRUE.equals(cat.getHasPrivateBathroom())
-            );
-        }).collect(Collectors.toList());
+        return roomRepository.findAll().stream()
+                .map(this::mapToRoomResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RoomResponse> getAllWithCategory() {
+        return roomRepository.findAll().stream()
+                .map(this::mapToRoomResponse)
+                .collect(Collectors.toList());
+    }
+
+    private RoomResponse mapToRoomResponse(Room room) {
+        CategoryRoom cat = room.getCategoryRoom();
+
+        CategoryRoomResponse categoryRoomResponse = new CategoryRoomResponse(
+                cat.getCategoryRoomId(),
+                cat.getNameCategoryEs(),
+                cat.getDescriptionEs(),
+                cat.getRoomSize(),
+                cat.getBedInfo(),
+                null, // extraInfo no usado
+                Boolean.TRUE.equals(cat.getHasTv()),
+                Boolean.TRUE.equals(cat.getHasAc()),
+                Boolean.TRUE.equals(cat.getHasPrivateBathroom())
+        );
+
+        return new RoomResponse(
+                room.getRoomId(),
+                room.getNameEs(),
+                room.getMaxCapacity(),
+                room.getDescriptionEs(),
+                room.getPrice(),
+                room.getSizeBed(),
+                room.getQuantity(),
+                room.getImg() != null ? room.getImg().getPath() : null,
+                categoryRoomResponse
+        );
     }
 
     @Override
@@ -189,10 +168,10 @@ public class RoomServiceImpl implements RoomService {
 
             Room room = new Room(
                     dto.getNameEs(),
-                    dto.getNameEn(),
+                    null,
                     dto.getMaxCapacity(),
                     dto.getDescriptionEs(),
-                    dto.getDescriptionEn(),
+                    null,
                     dto.getPrice(),
                     dto.getSizeBed(),
                     categoryRoom,
@@ -206,39 +185,14 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomResponse> getAllWithCategory() {
-        return roomRepository.findAll().stream().map(room -> {
-            CategoryRoom cat = room.getCategoryRoom();
-            return new RoomResponse(
-                    room.getRoomId(),
-                    room.getNameEs(),
-                    room.getMaxCapacity(),
-                    room.getDescriptionEs(),
-                    room.getPrice(),
-                    room.getSizeBed(),
-                    cat.getCategoryRoomId(),
-                    room.getQuantity(),
-                    room.getImg() != null ? room.getImg().getPath() : null,
-                    cat.getBedInfo(),
-                    cat.getRoomSize(),
-                    Boolean.TRUE.equals(cat.getHasTv()),
-                    Boolean.TRUE.equals(cat.getHasAc()),
-                    Boolean.TRUE.equals(cat.getHasPrivateBathroom())
-            );
-        }).collect(Collectors.toList());
-    }
-
-    @Override
     public void updateRoomWithImage(Integer roomId, RoomWithImageDTO dto) {
         try {
             Room room = roomRepository.findById(roomId)
                     .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
 
             room.setNameEs(dto.getNameEs());
-            room.setNameEn(dto.getNameEn());
             room.setMaxCapacity(dto.getMaxCapacity());
             room.setDescriptionEs(dto.getDescriptionEs());
-            room.setDescriptionEn(dto.getDescriptionEn());
             room.setPrice(dto.getPrice());
             room.setSizeBed(dto.getSizeBed());
             room.setQuantity(dto.getQuantity());

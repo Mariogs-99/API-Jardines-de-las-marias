@@ -3,6 +3,8 @@ package com.hotelJB.hotelJB_API.services.impl;
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import com.hotelJB.hotelJB_API.models.entities.Room;
+import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
+import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.repositories.ReservationRepository;
 import com.hotelJB.hotelJB_API.repositories.RoomRepository;
 import com.hotelJB.hotelJB_API.services.ReservationService;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -169,5 +172,34 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         return fullyBookedDates;
+    }
+
+    // Extra: Devuelve lista de ReservationResponse para evitar problemas con fechas en el frontend
+    public List<ReservationResponse> getAllResponses() {
+        return reservationRepository.findAll().stream()
+                .map(res -> new ReservationResponse(
+                        res.getReservationId(),
+                        res.getInitDate(),
+                        res.getFinishDate(),
+                        res.getCantPeople(),
+                        res.getName(),
+                        res.getEmail(),
+                        res.getPhone(),
+                        res.getPayment(),
+                        res.getQuantityReserved(),
+                        res.getCreationDate(),
+                        new RoomResponse(
+                                res.getRoom().getRoomId(),
+                                res.getRoom().getNameEs(),
+                                res.getRoom().getMaxCapacity(),
+                                res.getRoom().getDescriptionEs(),
+                                res.getRoom().getPrice(),
+                                res.getRoom().getSizeBed(),
+                                res.getRoom().getQuantity(),
+                                res.getRoom().getImg() != null ? res.getRoom().getImg().getPath() : null,
+                                null // puedes mapear la categoryRoom si ya tienes CategoryRoomResponse
+                        )
+                ))
+                .collect(Collectors.toList());
     }
 }

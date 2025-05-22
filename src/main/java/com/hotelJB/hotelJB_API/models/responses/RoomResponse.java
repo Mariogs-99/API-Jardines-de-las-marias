@@ -14,15 +14,8 @@ public class RoomResponse {
     private String description;
     private double price;
     private String sizeBed;
-    private int categoryRoomId;
-
-    // Nuevos campos necesarios para frontend
     private int quantity;
     private String imageUrl;
 
-    private String bedInfo;
-    private String roomSize;
-    private boolean hasTv;
-    private boolean hasAc;
-    private boolean hasPrivateBathroom;
+    private CategoryRoomResponse categoryRoom; // <-- ahora es un objeto, no un int
 }

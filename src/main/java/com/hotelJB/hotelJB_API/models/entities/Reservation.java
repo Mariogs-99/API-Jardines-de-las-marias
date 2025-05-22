@@ -1,5 +1,6 @@
 package com.hotelJB.hotelJB_API.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,7 @@ public class Reservation {
     @Column(name="quantity_reserved") //Nuevo campo
     private int quantityReserved;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "creation_date", updatable = false)
     private LocalDateTime creationDate;
 

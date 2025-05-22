@@ -100,27 +100,34 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
 
     @Override
     public Optional<CategoryRoomResponse> findById(int categoryRoomId, String lang) {
-        Optional<CategoryRoom> categoryRoom = categoryRoomRepository.findById(categoryRoomId);
-
-        return categoryRoom.map(value -> new CategoryRoomResponse(
+        return categoryRoomRepository.findById(categoryRoomId).map(value -> new CategoryRoomResponse(
                 value.getCategoryRoomId(),
                 "es".equals(lang) ? value.getNameCategoryEs() : value.getNameCategoryEn(),
-                "es".equals(lang) ? value.getDescriptionEs() : value.getDescriptionEn()
+                "es".equals(lang) ? value.getDescriptionEs() : value.getDescriptionEn(),
+                value.getRoomSize(),
+                value.getBedInfo(),
+                null, // extraInfo si no se usa
+                Boolean.TRUE.equals(value.getHasTv()),
+                Boolean.TRUE.equals(value.getHasAc()),
+                Boolean.TRUE.equals(value.getHasPrivateBathroom())
         ));
     }
 
     @Override
     public List<CategoryRoomResponse> findByLanguage(String language) {
-        List<CategoryRoom> categoryRooms = categoryRoomRepository.findAll();
-
-        return categoryRooms.stream().map(value -> new CategoryRoomResponse(
+        return categoryRoomRepository.findAll().stream().map(value -> new CategoryRoomResponse(
                 value.getCategoryRoomId(),
                 "es".equals(language) ? value.getNameCategoryEs() : value.getNameCategoryEn(),
-                "es".equals(language) ? value.getDescriptionEs() : value.getDescriptionEn()
+                "es".equals(language) ? value.getDescriptionEs() : value.getDescriptionEn(),
+                value.getRoomSize(),
+                value.getBedInfo(),
+                null, // extraInfo si no se usa
+                Boolean.TRUE.equals(value.getHasTv()),
+                Boolean.TRUE.equals(value.getHasAc()),
+                Boolean.TRUE.equals(value.getHasPrivateBathroom())
         )).toList();
     }
 
-    // ✅ Adaptado al nuevo modelo Room → Img
     @Override
     public List<CategoryClientViewDTO> getCategoriesForClientView() {
         List<CategoryRoom> categories = categoryRoomRepository.findAll();
