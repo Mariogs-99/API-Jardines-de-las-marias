@@ -39,63 +39,51 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void save(RoomDTO data) throws Exception {
-        try {
-            CategoryRoom categoryRoom = categoryRoomRepository.findById(data.getCategoryRoomId())
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Category Room"));
+        CategoryRoom categoryRoom = categoryRoomRepository.findById(data.getCategoryRoomId())
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Category Room"));
 
-            Room room = new Room(
-                    data.getNameEs(),
-                    data.getNameEn(),
-                    data.getMaxCapacity(),
-                    data.getDescriptionEs(),
-                    data.getDescriptionEn(),
-                    data.getPrice(),
-                    data.getSizeBed(),
-                    categoryRoom,
-                    data.getQuantity()
-            );
+        Room room = new Room(
+                data.getNameEs(),
+                data.getNameEn(),
+                data.getMaxCapacity(),
+                data.getDescriptionEs(),
+                data.getDescriptionEn(),
+                data.getPrice(),
+                data.getSizeBed(),
+                categoryRoom,
+                data.getQuantity()
+        );
 
-            roomRepository.save(room);
-        } catch (Exception e) {
-            throw new Exception("Error save Room");
-        }
+        roomRepository.save(room);
     }
 
     @Override
     public void update(RoomDTO data, int roomId) throws Exception {
-        try {
-            CategoryRoom categoryRoom = categoryRoomRepository.findById(data.getCategoryRoomId())
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Category Room"));
+        CategoryRoom categoryRoom = categoryRoomRepository.findById(data.getCategoryRoomId())
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Category Room"));
 
-            Room room = roomRepository.findById(roomId)
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
-            room.setNameEs(data.getNameEs());
-            room.setNameEn(data.getNameEn());
-            room.setMaxCapacity(data.getMaxCapacity());
-            room.setDescriptionEs(data.getDescriptionEs());
-            room.setDescriptionEn(data.getDescriptionEn());
-            room.setPrice(data.getPrice());
-            room.setSizeBed(data.getSizeBed());
-            room.setQuantity(data.getQuantity());
-            room.setCategoryRoom(categoryRoom);
+        room.setNameEs(data.getNameEs());
+        room.setNameEn(data.getNameEn());
+        room.setMaxCapacity(data.getMaxCapacity());
+        room.setDescriptionEs(data.getDescriptionEs());
+        room.setDescriptionEn(data.getDescriptionEn());
+        room.setPrice(data.getPrice());
+        room.setSizeBed(data.getSizeBed());
+        room.setQuantity(data.getQuantity());
+        room.setCategoryRoom(categoryRoom);
 
-            roomRepository.save(room);
-        } catch (Exception e) {
-            throw new Exception("Error update room");
-        }
+        roomRepository.save(room);
     }
 
     @Override
     public void delete(int roomId) throws Exception {
-        try {
-            Room room = roomRepository.findById(roomId)
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
-            roomRepository.delete(room);
-        } catch (Exception e) {
-            throw new Exception("Error delete room");
-        }
+        roomRepository.delete(room);
     }
 
     @Override
@@ -105,19 +93,27 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Optional<RoomResponse> findById(int roomId, String lang) {
-        Optional<Room> room = roomRepository.findById(roomId);
+        Optional<Room> roomOpt = roomRepository.findById(roomId);
 
-        return room.map(value -> new RoomResponse(
-                value.getRoomId(),
-                "es".equals(lang) ? value.getNameEs() : value.getNameEn(),
-                value.getMaxCapacity(),
-                "es".equals(lang) ? value.getDescriptionEs() : value.getDescriptionEn(),
-                value.getPrice(),
-                value.getSizeBed(),
-                value.getCategoryRoom().getCategoryRoomId(),
-                value.getQuantity(),
-                value.getImg() != null ? value.getImg().getPath() : null
-        ));
+        return roomOpt.map(room -> {
+            CategoryRoom cat = room.getCategoryRoom();
+            return new RoomResponse(
+                    room.getRoomId(),
+                    "es".equals(lang) ? room.getNameEs() : room.getNameEn(),
+                    room.getMaxCapacity(),
+                    "es".equals(lang) ? room.getDescriptionEs() : room.getDescriptionEn(),
+                    room.getPrice(),
+                    room.getSizeBed(),
+                    cat.getCategoryRoomId(),
+                    room.getQuantity(),
+                    room.getImg() != null ? room.getImg().getPath() : null,
+                    cat.getBedInfo(),
+                    cat.getRoomSize(),
+                    Boolean.TRUE.equals(cat.getHasTv()),
+                    Boolean.TRUE.equals(cat.getHasAc()),
+                    Boolean.TRUE.equals(cat.getHasPrivateBathroom())
+            );
+        });
     }
 
     @Override
@@ -126,35 +122,48 @@ public class RoomServiceImpl implements RoomService {
 
         return availableRooms.stream()
                 .filter(room -> room.getMaxCapacity() >= maxCapacity)
-                .map(room -> new RoomResponse(
-                        room.getRoomId(),
-                        "es".equals(lang) ? room.getNameEs() : room.getNameEn(),
-                        room.getMaxCapacity(),
-                        "es".equals(lang) ? room.getDescriptionEs() : room.getDescriptionEn(),
-                        room.getPrice(),
-                        room.getSizeBed(),
-                        room.getCategoryRoom().getCategoryRoomId(),
-                        room.getQuantity(),
-                        room.getImg() != null ? room.getImg().getPath() : null
-                ))
-                .collect(Collectors.toList());
+                .map(room -> {
+                    CategoryRoom cat = room.getCategoryRoom();
+                    return new RoomResponse(
+                            room.getRoomId(),
+                            "es".equals(lang) ? room.getNameEs() : room.getNameEn(),
+                            room.getMaxCapacity(),
+                            "es".equals(lang) ? room.getDescriptionEs() : room.getDescriptionEn(),
+                            room.getPrice(),
+                            room.getSizeBed(),
+                            cat.getCategoryRoomId(),
+                            room.getQuantity(),
+                            room.getImg() != null ? room.getImg().getPath() : null,
+                            cat.getBedInfo(),
+                            cat.getRoomSize(),
+                            Boolean.TRUE.equals(cat.getHasTv()),
+                            Boolean.TRUE.equals(cat.getHasAc()),
+                            Boolean.TRUE.equals(cat.getHasPrivateBathroom())
+                    );
+                }).collect(Collectors.toList());
     }
 
     @Override
     public List<RoomResponse> findByLanguage(String language) {
-        List<Room> rooms = roomRepository.findAll();
-
-        return rooms.stream().map(value -> new RoomResponse(
-                value.getRoomId(),
-                "es".equals(language) ? value.getNameEs() : value.getNameEn(),
-                value.getMaxCapacity(),
-                "es".equals(language) ? value.getDescriptionEs() : value.getDescriptionEn(),
-                value.getPrice(),
-                value.getSizeBed(),
-                value.getCategoryRoom().getCategoryRoomId(),
-                value.getQuantity(),
-                value.getImg() != null ? value.getImg().getPath() : null
-        )).collect(Collectors.toList());
+        return roomRepository.findAll().stream().map(room -> {
+            CategoryRoom cat = room.getCategoryRoom();
+            return new RoomResponse(
+                    room.getRoomId(),
+                    "es".equals(language) ? room.getNameEs() : room.getNameEn(),
+                    room.getMaxCapacity(),
+                    "es".equals(language) ? room.getDescriptionEs() : room.getDescriptionEn(),
+                    room.getPrice(),
+                    room.getSizeBed(),
+                    cat.getCategoryRoomId(),
+                    room.getQuantity(),
+                    room.getImg() != null ? room.getImg().getPath() : null,
+                    cat.getBedInfo(),
+                    cat.getRoomSize(),
+                    Boolean.TRUE.equals(cat.getHasTv()),
+                    Boolean.TRUE.equals(cat.getHasAc()),
+                    Boolean.TRUE.equals(cat.getHasPrivateBathroom())
+            );
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -189,32 +198,35 @@ public class RoomServiceImpl implements RoomService {
                     categoryRoom,
                     dto.getQuantity()
             );
-            room.setImg(img); // ✅ relación directa
+            room.setImg(img);
             roomRepository.save(room);
-
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Error al guardar habitación con imagen", e);
         }
     }
 
     @Override
     public List<RoomResponse> getAllWithCategory() {
-        return roomRepository.findAll().stream()
-                .map(room -> new RoomResponse(
-                        room.getRoomId(),
-                        room.getNameEs(), // puedes usar idioma si deseas
-                        room.getMaxCapacity(),
-                        room.getDescriptionEs(),
-                        room.getPrice(),
-                        room.getSizeBed(),
-                        room.getCategoryRoom() != null ? room.getCategoryRoom().getCategoryRoomId() : null,
-                        room.getQuantity(),
-                        room.getImg() != null ? room.getImg().getPath() : null
-                ))
-                .collect(Collectors.toList());
+        return roomRepository.findAll().stream().map(room -> {
+            CategoryRoom cat = room.getCategoryRoom();
+            return new RoomResponse(
+                    room.getRoomId(),
+                    room.getNameEs(),
+                    room.getMaxCapacity(),
+                    room.getDescriptionEs(),
+                    room.getPrice(),
+                    room.getSizeBed(),
+                    cat.getCategoryRoomId(),
+                    room.getQuantity(),
+                    room.getImg() != null ? room.getImg().getPath() : null,
+                    cat.getBedInfo(),
+                    cat.getRoomSize(),
+                    Boolean.TRUE.equals(cat.getHasTv()),
+                    Boolean.TRUE.equals(cat.getHasAc()),
+                    Boolean.TRUE.equals(cat.getHasPrivateBathroom())
+            );
+        }).collect(Collectors.toList());
     }
-
 
     @Override
     public void updateRoomWithImage(Integer roomId, RoomWithImageDTO dto) {
@@ -251,13 +263,11 @@ public class RoomServiceImpl implements RoomService {
                 Img img = new Img(fileName, relativePath);
                 imgRepository.save(img);
 
-                room.setImg(img); // ✅ actualizar imagen
+                room.setImg(img);
             }
 
             roomRepository.save(room);
-
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Error al actualizar habitación con imagen", e);
         }
     }

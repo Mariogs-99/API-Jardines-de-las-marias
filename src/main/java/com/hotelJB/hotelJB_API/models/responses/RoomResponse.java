@@ -16,7 +16,13 @@ public class RoomResponse {
     private String sizeBed;
     private int categoryRoomId;
 
-    //Nueva información útil para mostrar
-    private int quantity;      // total de habitaciones de este tipo
-    private String imageUrl;   // ruta de la imagen asociada (ej: uploads/imagen.jpg)
+    // Nuevos campos necesarios para frontend
+    private int quantity;
+    private String imageUrl;
+
+    private String bedInfo;
+    private String roomSize;
+    private boolean hasTv;
+    private boolean hasAc;
+    private boolean hasPrivateBathroom;
 }

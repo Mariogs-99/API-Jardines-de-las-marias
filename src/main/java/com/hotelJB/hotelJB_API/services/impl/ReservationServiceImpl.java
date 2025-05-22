@@ -26,11 +26,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void save(ReservationDTO data) throws Exception {
         try {
-            // 1. Buscar habitación
             Room room = roomRepository.findById(data.getRoomId())
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
-            // 2. Validar disponibilidad
             int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
                     room, data.getInitDate(), data.getFinishDate());
 
@@ -40,7 +38,9 @@ public class ReservationServiceImpl implements ReservationService {
                 throw new CustomException(ErrorType.NOT_AVAILABLE, "No hay suficientes habitaciones disponibles.");
             }
 
-            // 3. Crear y guardar la reserva
+            room.setQuantity(room.getQuantity() - data.getQuantityReserved());
+            roomRepository.save(room);
+
             Reservation reservation = new Reservation(
                     data.getInitDate(),
                     data.getFinishDate(),
@@ -71,6 +71,28 @@ public class ReservationServiceImpl implements ReservationService {
             Reservation reservation = reservationRepository.findById(reservationId)
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
 
+            int cantidadAnterior = reservation.getQuantityReserved();
+            int cantidadNueva = data.getQuantityReserved();
+            int diferencia = cantidadNueva - cantidadAnterior;
+
+            if (diferencia > 0) {
+                int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
+                        room, data.getInitDate(), data.getFinishDate());
+
+                int available = room.getQuantity() - totalReserved;
+
+                if (available < diferencia) {
+                    throw new CustomException(ErrorType.NOT_AVAILABLE,
+                            "No hay suficientes habitaciones disponibles para modificar esta reserva.");
+                }
+
+                room.setQuantity(room.getQuantity() - diferencia);
+            } else if (diferencia < 0) {
+                room.setQuantity(room.getQuantity() + Math.abs(diferencia));
+            }
+
+            roomRepository.save(room);
+
             reservation.setInitDate(data.getInitDate());
             reservation.setFinishDate(data.getFinishDate());
             reservation.setCantPeople(data.getCantPeople());
@@ -79,9 +101,11 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setPhone(data.getPhone());
             reservation.setPayment(data.getPayment());
             reservation.setRoom(room);
-            reservation.setQuantityReserved(data.getQuantityReserved());
+            reservation.setQuantityReserved(cantidadNueva);
 
             reservationRepository.save(reservation);
+        } catch (CustomException e) {
+            throw e;
         } catch (Exception e) {
             throw new Exception("Error al actualizar la reserva: " + e.getMessage());
         }
@@ -92,6 +116,10 @@ public class ReservationServiceImpl implements ReservationService {
         try {
             Reservation reservation = reservationRepository.findById(reservationId)
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
+
+            Room room = reservation.getRoom();
+            room.setQuantity(room.getQuantity() + reservation.getQuantityReserved());
+            roomRepository.save(room);
 
             reservationRepository.delete(reservation);
         } catch (Exception e) {
