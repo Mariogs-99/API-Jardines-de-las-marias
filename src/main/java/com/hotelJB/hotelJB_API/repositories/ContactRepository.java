@@ -3,11 +3,11 @@ package com.hotelJB.hotelJB_API.repositories;
 import com.hotelJB.hotelJB_API.models.entities.Contact;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface ContactRepository extends JpaRepository<Contact,Integer> {
-    @Query("SELECT c FROM Contact c ORDER BY c.id ASC LIMIT 1")
-    Optional<Contact> findFirst();
-
+@Repository
+public interface ContactRepository extends JpaRepository<Contact, Long> {
 }
+

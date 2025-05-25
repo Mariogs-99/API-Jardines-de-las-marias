@@ -1,19 +1,20 @@
-package com.hotelJB.hotelJB_API.models.dtos;
+package com.hotelJB.hotelJB_API.models.responses;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ContactDTO {
+public class ContactResponse {
+    private Long contactId;
     private String telephone;
     private String telephone2;
     private String email;
@@ -23,5 +24,8 @@ public class ContactDTO {
     private String facebookUrl;
     private String instagramUsername;
     private String tiktok;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
+
 
