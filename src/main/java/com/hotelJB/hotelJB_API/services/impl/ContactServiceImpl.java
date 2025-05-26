@@ -33,8 +33,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public ContactResponse updateContact(ContactDTO dto) {
-        Contact contact = repository.findAll().stream().findFirst()
-                .orElseThrow(() -> new RuntimeException("No se encontró información de contacto"));
+        Contact contact = repository.findAll().stream().findFirst().orElse(null);
+
+        if (contact == null) {
+            contact = new Contact(); // Crear nuevo contacto si no existe
+        }
 
         contact.setTelephone(dto.getTelephone());
         contact.setTelephone2(dto.getTelephone2());
@@ -48,6 +51,7 @@ public class ContactServiceImpl implements ContactService {
 
         return mapToResponse(repository.save(contact));
     }
+
 
     private ContactResponse mapToResponse(Contact entity) {
         ContactResponse res = new ContactResponse();

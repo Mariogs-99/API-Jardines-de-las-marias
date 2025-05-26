@@ -33,7 +33,9 @@ public class Contact {
     @Column(name = "instagram_username")
     private String instagramUsername;
 
+    @Column(name = "tiktok_url")
     private String tiktok;
+
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
