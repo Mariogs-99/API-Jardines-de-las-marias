@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GalleryDTO {
-    private String nameImg;
-    private String path;
-    private int categoryId;
+    private String title;
+    private String description;
+    private Integer position;
+    private Boolean active;
 }

@@ -3,10 +3,12 @@ package com.hotelJB.hotelJB_API.repositories;
 import com.hotelJB.hotelJB_API.models.entities.Category;
 import com.hotelJB.hotelJB_API.models.entities.Gallery;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface GalleryRepository extends JpaRepository<Gallery,Integer> {
-    List<Gallery> findByCategory(Category category);
-    List<Gallery> findByCategory_CategoryId(int categoryId);
+@Repository
+public interface GalleryRepository extends JpaRepository<Gallery, Long> {
+    List<Gallery> findAllByActiveTrueOrderByPositionAsc();
 }
+

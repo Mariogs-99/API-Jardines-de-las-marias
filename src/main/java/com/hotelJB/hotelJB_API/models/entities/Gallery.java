@@ -1,32 +1,41 @@
 package com.hotelJB.hotelJB_API.models.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
-@Entity
 @NoArgsConstructor
-@Table(name="gallery")
+@AllArgsConstructor
+@Entity
+@Table(name = "gallery")
 public class Gallery {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="gallery_id")
-    private int galleryId;
+    private Long galleryId;
 
-    @Column(name="name_img")
-    private String nameImg;
+    private String title;
 
-    @Column(name="path")
-    private String path;
+    private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="category_id")
-    private Category category;
+    @Column(nullable = false)
+    private String imageUrl;
 
-    public Gallery(String nameImg, String path, Category category) {
-        this.nameImg = nameImg;
-        this.path = path;
-        this.category = category;
+    private Integer position;
+
+    private Boolean active = true;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @PreUpdate
+    public void setUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
     }
+
 }
