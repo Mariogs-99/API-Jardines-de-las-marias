@@ -3,6 +3,7 @@ package com.hotelJB.hotelJB_API.services.impl;
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import com.hotelJB.hotelJB_API.models.entities.Room;
+import com.hotelJB.hotelJB_API.models.responses.CategoryRoomResponse;
 import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.repositories.ReservationRepository;
@@ -40,9 +41,6 @@ public class ReservationServiceImpl implements ReservationService {
             if (available < data.getQuantityReserved()) {
                 throw new CustomException(ErrorType.NOT_AVAILABLE, "No hay suficientes habitaciones disponibles.");
             }
-
-            room.setQuantity(room.getQuantity() - data.getQuantityReserved());
-            roomRepository.save(room);
 
             Reservation reservation = new Reservation(
                     data.getInitDate(),
@@ -88,13 +86,7 @@ public class ReservationServiceImpl implements ReservationService {
                     throw new CustomException(ErrorType.NOT_AVAILABLE,
                             "No hay suficientes habitaciones disponibles para modificar esta reserva.");
                 }
-
-                room.setQuantity(room.getQuantity() - diferencia);
-            } else if (diferencia < 0) {
-                room.setQuantity(room.getQuantity() + Math.abs(diferencia));
             }
-
-            roomRepository.save(room);
 
             reservation.setInitDate(data.getInitDate());
             reservation.setFinishDate(data.getFinishDate());
@@ -119,10 +111,6 @@ public class ReservationServiceImpl implements ReservationService {
         try {
             Reservation reservation = reservationRepository.findById(reservationId)
                     .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
-
-            Room room = reservation.getRoom();
-            room.setQuantity(room.getQuantity() + reservation.getQuantityReserved());
-            roomRepository.save(room);
 
             reservationRepository.delete(reservation);
         } catch (Exception e) {
@@ -174,7 +162,6 @@ public class ReservationServiceImpl implements ReservationService {
         return fullyBookedDates;
     }
 
-    // Extra: Devuelve lista de ReservationResponse para evitar problemas con fechas en el frontend
     public List<ReservationResponse> getAllResponses() {
         return reservationRepository.findAll().stream()
                 .map(res -> new ReservationResponse(
@@ -197,9 +184,54 @@ public class ReservationServiceImpl implements ReservationService {
                                 res.getRoom().getSizeBed(),
                                 res.getRoom().getQuantity(),
                                 res.getRoom().getImg() != null ? res.getRoom().getImg().getPath() : null,
-                                null // puedes mapear la categoryRoom si ya tienes CategoryRoomResponse
+                                null
                         )
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int cantPeople) {
+        List<Room> allRooms = roomRepository.findAll();
+        List<RoomResponse> availableRooms = new ArrayList<>();
+
+        for (Room room : allRooms) {
+            if (room.getMaxCapacity() < cantPeople) continue;
+
+            int reserved = reservationRepository.countReservedQuantityByRoomAndDates(room, initDate, finishDate);
+            int disponibles = room.getQuantity() - reserved;
+
+            if (disponibles > 0) {
+                CategoryRoomResponse categoryResponse = null;
+
+                if (room.getCategoryRoom() != null) {
+                    categoryResponse = new CategoryRoomResponse(
+                            room.getCategoryRoom().getCategoryRoomId(),
+                            room.getCategoryRoom().getNameCategoryEs(),
+                            room.getCategoryRoom().getDescriptionEs(),
+                            room.getCategoryRoom().getRoomSize(),
+                            room.getCategoryRoom().getBedInfo(),
+                            null,
+                            room.getCategoryRoom().getHasTv(),
+                            room.getCategoryRoom().getHasAc(),
+                            room.getCategoryRoom().getHasPrivateBathroom()
+                    );
+                }
+
+                availableRooms.add(new RoomResponse(
+                        room.getRoomId(),
+                        room.getNameEs(),
+                        room.getMaxCapacity(),
+                        room.getDescriptionEs(),
+                        room.getPrice(),
+                        room.getSizeBed(),
+                        disponibles,
+                        room.getImg() != null ? room.getImg().getPath() : null,
+                        categoryResponse
+                ));
+            }
+        }
+
+        return availableRooms;
     }
 }

@@ -2,10 +2,12 @@ package com.hotelJB.hotelJB_API.controllers;
 
 import com.hotelJB.hotelJB_API.models.dtos.MessageDTO;
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
+import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.RequestErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -88,4 +90,17 @@ public class ReservationController {
             return new ResponseEntity<>(new MessageDTO("Error interno del servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    //?Endpoint de habitaciones disponibles en base a fechas
+
+    @GetMapping("/available-rooms")
+    public ResponseEntity<List<RoomResponse>> getAvailableRooms(
+            @RequestParam("initDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate initDate,
+            @RequestParam("finishDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate finishDate,
+            @RequestParam("cantPeople") int cantPeople
+    ) {
+        List<RoomResponse> availableRooms = reservationService.getAvailableRooms(initDate, finishDate, cantPeople);
+        return ResponseEntity.ok(availableRooms);
+    }
+
 }

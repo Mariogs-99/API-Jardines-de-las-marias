@@ -3,6 +3,7 @@ package com.hotelJB.hotelJB_API.services;
 
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
+import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,4 +17,6 @@ public interface ReservationService {
     List<Reservation> getAll();
     Optional<Reservation> findById(int reservationId);
     List<Map<String, LocalDate>> getFullyBookedDatesForHotel();
+
+    List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int cantPeople);
 }
