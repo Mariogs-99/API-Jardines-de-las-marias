@@ -15,6 +15,7 @@ import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
 import com.hotelJB.hotelJB_API.utils.RequestErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -37,6 +38,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Autowired
     private ImgRepository imgRepository;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     @Override
     public void save(RoomDTO data) throws Exception {
@@ -126,11 +130,20 @@ public class RoomServiceImpl implements RoomService {
                 cat.getDescriptionEs(),
                 cat.getRoomSize(),
                 cat.getBedInfo(),
-                null, // extraInfo no usado
+                null,
                 Boolean.TRUE.equals(cat.getHasTv()),
                 Boolean.TRUE.equals(cat.getHasAc()),
                 Boolean.TRUE.equals(cat.getHasPrivateBathroom())
         );
+
+        //URL para el frontend
+        String rawPath = room.getImg().getPath().replaceFirst("^/+", "");
+
+        String imageUrl = room.getImg() != null
+                ? baseUrl + "/" + rawPath
+                : baseUrl + "/images/default-room.jpg";
+
+
 
         return new RoomResponse(
                 room.getRoomId(),
@@ -140,10 +153,11 @@ public class RoomServiceImpl implements RoomService {
                 room.getPrice(),
                 room.getSizeBed(),
                 room.getQuantity(),
-                room.getImg() != null ? room.getImg().getPath() : null,
+                imageUrl,
                 categoryRoomResponse
         );
     }
+
 
     @Override
     public void saveRoomWithImage(RoomWithImageDTO dto) {
