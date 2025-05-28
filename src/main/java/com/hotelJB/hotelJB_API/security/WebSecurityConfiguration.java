@@ -45,10 +45,8 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
         managerBuilder
                 .userDetailsService(identifier -> {
                     User_ user = userService.findByUsername(identifier);
-
-                    if(user == null)
+                    if (user == null)
                         throw new UsernameNotFoundException("User: " + identifier + ", not found!");
-
                     return user;
                 })
                 .passwordEncoder(passwordEncoder);
@@ -61,8 +59,11 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
         String uploadPath = System.getProperty("user.dir") + "/uploads/";
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadPath);
-    }
 
+        String menuPath = System.getProperty("user.dir") + "/menu/";
+        registry.addResourceHandler("/menu/**")
+                .addResourceLocations("file:" + menuPath);
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -76,6 +77,7 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
 
         http.cors(withDefaults()).authorizeHttpRequests(auth -> {
             auth.requestMatchers("/uploads/**").permitAll();
+            auth.requestMatchers("/menu/**").permitAll();
             auth.requestMatchers("/api/auth/**").permitAll();
             auth.requestMatchers(HttpMethod.GET, "/api/**").permitAll();
             auth.requestMatchers(HttpMethod.POST, "/api/reservation/**").permitAll();
@@ -88,9 +90,8 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
             res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Auth fail!");
         }));
 
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class); // ✅ Asegurar que el filtro se ejecute
+        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 }
