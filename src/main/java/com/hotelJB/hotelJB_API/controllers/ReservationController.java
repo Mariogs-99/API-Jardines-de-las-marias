@@ -72,7 +72,7 @@ public class ReservationController {
         if (id != null) {
             return new ResponseEntity<>(reservationService.findById(id), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(reservationService.getAll(), HttpStatus.OK);
+            return new ResponseEntity<>(reservationService.getAllResponses(), HttpStatus.OK); // ✅ Esto devuelve con status
         }
     }
 

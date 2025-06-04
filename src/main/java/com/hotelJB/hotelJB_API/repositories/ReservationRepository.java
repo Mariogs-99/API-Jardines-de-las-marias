@@ -33,4 +33,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                                      @Param("initDate") LocalDate initDate,
                                      @Param("finishDate") LocalDate finishDate);
 
+
+    // List<Reservation> findByFinishDateBeforeAndStatus(LocalDate fecha, String status);
+
+
 }

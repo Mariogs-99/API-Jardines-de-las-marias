@@ -19,6 +19,6 @@ public class ReservationResponse {
     private double payment;
     private int quantityReserved;
     private LocalDateTime creationDate; // <-- Este campo estará correctamente serializado
-
+    private String status;
     private RoomResponse room;
 }

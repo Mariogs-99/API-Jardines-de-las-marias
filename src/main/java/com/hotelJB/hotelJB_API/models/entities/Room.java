@@ -39,15 +39,18 @@ public class Room {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "available_quantity")
+    private Integer availableQuantity; // <-- nuevo campo dinámico
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_room_id")
     private CategoryRoom categoryRoom;
 
-    // ✅ NUEVO: relación directa con una sola imagen
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "img_id")
     private Img img;
 
+    // Constructor para crear habitaciones desde código
     public Room(String nameEs, String nameEn, int maxCapacity, String descriptionEs, String descriptionEn,
                 double price, String sizeBed, CategoryRoom categoryRoom, Integer quantity) {
         this.nameEs = nameEs;
@@ -59,6 +62,7 @@ public class Room {
         this.sizeBed = sizeBed;
         this.categoryRoom = categoryRoom;
         this.quantity = quantity;
+        this.availableQuantity = quantity; // <-- inicializa como todas disponibles
     }
 
     public void setImg(Img img) {

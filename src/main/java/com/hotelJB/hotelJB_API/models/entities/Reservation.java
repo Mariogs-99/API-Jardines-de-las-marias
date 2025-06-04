@@ -11,36 +11,36 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name="reservation")
+@Table(name = "reservation")
 public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="reservation_id")
+    @Column(name = "reservation_id")
     private int reservationId;
 
-    @Column(name="init_date")
+    @Column(name = "init_date")
     private LocalDate initDate;
 
-    @Column(name="finish_date")
+    @Column(name = "finish_date")
     private LocalDate finishDate;
 
-    @Column(name="cant_people")
+    @Column(name = "cant_people")
     private int cantPeople;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name="email")
+    @Column(name = "email")
     private String email;
 
-    @Column(name="phone")
+    @Column(name = "phone")
     private String phone;
 
-    @Column(name="payment")
+    @Column(name = "payment")
     private double payment;
 
-    @Column(name="quantity_reserved") //Nuevo campo
+    @Column(name = "quantity_reserved")
     private int quantityReserved;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -52,9 +52,8 @@ public class Reservation {
         this.creationDate = LocalDateTime.now();
     }
 
-
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="room_id")
+    @JoinColumn(name = "room_id")
     private Room room;
 
     public Reservation(LocalDate initDate, LocalDate finishDate, int cantPeople, String name, String email,
@@ -69,5 +68,4 @@ public class Reservation {
         this.room = room;
         this.quantityReserved = quantityReserved;
     }
-
 }

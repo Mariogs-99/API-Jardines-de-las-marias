@@ -182,6 +182,30 @@ public class ReservationServiceImpl implements ReservationService {
 
                     String imageUrl = room.getImg() != null ? room.getImg().getPath() : null;
 
+                    RoomResponse roomResponse = new RoomResponse(
+                            room.getRoomId(),
+                            room.getNameEs(),
+                            room.getMaxCapacity(),
+                            room.getDescriptionEs(),
+                            room.getPrice(),
+                            room.getSizeBed(),
+                            room.getQuantity(),
+                            imageUrl,
+                            room.getQuantity(), // disponible actual asumida
+                            categoryRoomResponse
+                    );
+
+                    // 📆 Lógica de estado de la reserva
+                    String status;
+                    LocalDate today = LocalDate.now();
+                    if (res.getFinishDate().isBefore(today)) {
+                        status = "FINALIZADA";
+                    } else if (res.getInitDate().isAfter(today)) {
+                        status = "FUTURA";
+                    } else {
+                        status = "ACTIVA";
+                    }
+
                     return new ReservationResponse(
                             res.getReservationId(),
                             res.getInitDate(),
@@ -193,21 +217,13 @@ public class ReservationServiceImpl implements ReservationService {
                             res.getPayment(),
                             res.getQuantityReserved(),
                             res.getCreationDate(),
-                            new RoomResponse(
-                                    room.getRoomId(),
-                                    room.getNameEs(),
-                                    room.getMaxCapacity(),
-                                    room.getDescriptionEs(),
-                                    room.getPrice(),
-                                    room.getSizeBed(),
-                                    room.getQuantity(),
-                                    imageUrl,
-                                    room.getQuantity(), // asumes disponibilidad completa para esta respuesta
-                                    categoryRoomResponse
-                            )
+                            status,
+                            roomResponse
                     );
+
                 }).collect(Collectors.toList());
     }
+
 
     @Override
     public List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int cantPeople) {
