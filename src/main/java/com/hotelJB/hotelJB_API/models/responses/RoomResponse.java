@@ -16,6 +16,6 @@ public class RoomResponse {
     private String sizeBed;
     private int quantity;
     private String imageUrl;
-
+    private int availableQuantity;
     private CategoryRoomResponse categoryRoom; // <-- ahora es un objeto, no un int
 }

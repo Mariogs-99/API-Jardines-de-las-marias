@@ -30,4 +30,7 @@ public interface RoomService {
     List<RoomResponse> getAllWithCategory();
 
     void updateRoomWithImage(Integer roomId, RoomWithImageDTO dto);
+
+    boolean isRoomAvailable(Integer roomId, LocalDate initDate, LocalDate finishDate);
+
 }

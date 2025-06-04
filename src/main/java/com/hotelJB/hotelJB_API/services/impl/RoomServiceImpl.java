@@ -9,6 +9,7 @@ import com.hotelJB.hotelJB_API.models.responses.CategoryRoomResponse;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.repositories.CategoryRoomRepository;
 import com.hotelJB.hotelJB_API.repositories.ImgRepository;
+import com.hotelJB.hotelJB_API.repositories.ReservationRepository;
 import com.hotelJB.hotelJB_API.repositories.RoomRepository;
 import com.hotelJB.hotelJB_API.services.RoomService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
@@ -34,10 +35,13 @@ public class RoomServiceImpl implements RoomService {
     private CategoryRoomRepository categoryRoomRepository;
 
     @Autowired
+    private ImgRepository imgRepository;
+
+    @Autowired
     private RequestErrorHandler errorHandler;
 
     @Autowired
-    private ImgRepository imgRepository;
+    private ReservationRepository reservationRepository;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -101,9 +105,13 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int maxCapacity, String lang) {
-        return roomRepository.findRoomsWithAvailableQuantity(initDate, finishDate).stream()
+        return roomRepository.findAll().stream()
                 .filter(room -> room.getMaxCapacity() >= maxCapacity)
-                .map(this::mapToRoomResponse)
+                .map(room -> {
+                    int reserved = roomRepository.countReservedQuantityForRoom(room.getRoomId(), initDate, finishDate);
+                    int available = room.getQuantity() - reserved;
+                    return mapToRoomResponse(room, available);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -122,6 +130,10 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private RoomResponse mapToRoomResponse(Room room) {
+        return mapToRoomResponse(room, room.getQuantity()); // valor por defecto
+    }
+
+    private RoomResponse mapToRoomResponse(Room room, int availableQuantity) {
         CategoryRoom cat = room.getCategoryRoom();
 
         CategoryRoomResponse categoryRoomResponse = new CategoryRoomResponse(
@@ -136,14 +148,10 @@ public class RoomServiceImpl implements RoomService {
                 Boolean.TRUE.equals(cat.getHasPrivateBathroom())
         );
 
-        //URL para el frontend
         String rawPath = room.getImg().getPath().replaceFirst("^/+", "");
-
         String imageUrl = room.getImg() != null
                 ? baseUrl + "/" + rawPath
                 : baseUrl + "/images/default-room.jpg";
-
-
 
         return new RoomResponse(
                 room.getRoomId(),
@@ -154,10 +162,11 @@ public class RoomServiceImpl implements RoomService {
                 room.getSizeBed(),
                 room.getQuantity(),
                 imageUrl,
+                availableQuantity,
                 categoryRoomResponse
         );
-    }
 
+    }
 
     @Override
     public void saveRoomWithImage(RoomWithImageDTO dto) {
@@ -239,4 +248,17 @@ public class RoomServiceImpl implements RoomService {
             throw new RuntimeException("Error al actualizar habitación con imagen", e);
         }
     }
+
+    @Override
+    public boolean isRoomAvailable(Integer roomId, LocalDate initDate, LocalDate finishDate) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
+
+        int totalQuantity = room.getQuantity();
+        int reserved = reservationRepository.countReservedQuantityByRoomAndDates(room, initDate, finishDate);
+
+        return (totalQuantity - reserved) > 0;
+    }
+
+
 }

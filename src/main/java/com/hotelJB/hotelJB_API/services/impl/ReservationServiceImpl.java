@@ -131,17 +131,14 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Map<String, LocalDate>> getFullyBookedDatesForHotel() {
         List<Object[]> reservedDates = reservationRepository.findAllReservedDates();
-
         if (reservedDates.isEmpty()) return Collections.emptyList();
 
         long totalRooms = roomRepository.count();
-
         Map<LocalDate, Integer> reservationCountByDate = new HashMap<>();
 
         for (Object[] dates : reservedDates) {
             LocalDate startDate = (LocalDate) dates[0];
             LocalDate endDate = (LocalDate) dates[1];
-
             LocalDate current = startDate;
             while (!current.isAfter(endDate)) {
                 reservationCountByDate.put(current, reservationCountByDate.getOrDefault(current, 0) + 1);
@@ -150,7 +147,6 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         List<Map<String, LocalDate>> fullyBookedDates = new ArrayList<>();
-
         for (Map.Entry<LocalDate, Integer> entry : reservationCountByDate.entrySet()) {
             if (entry.getValue() >= totalRooms) {
                 Map<String, LocalDate> dateMap = new HashMap<>();
@@ -162,32 +158,55 @@ public class ReservationServiceImpl implements ReservationService {
         return fullyBookedDates;
     }
 
+    @Override
     public List<ReservationResponse> getAllResponses() {
         return reservationRepository.findAll().stream()
-                .map(res -> new ReservationResponse(
-                        res.getReservationId(),
-                        res.getInitDate(),
-                        res.getFinishDate(),
-                        res.getCantPeople(),
-                        res.getName(),
-                        res.getEmail(),
-                        res.getPhone(),
-                        res.getPayment(),
-                        res.getQuantityReserved(),
-                        res.getCreationDate(),
-                        new RoomResponse(
-                                res.getRoom().getRoomId(),
-                                res.getRoom().getNameEs(),
-                                res.getRoom().getMaxCapacity(),
-                                res.getRoom().getDescriptionEs(),
-                                res.getRoom().getPrice(),
-                                res.getRoom().getSizeBed(),
-                                res.getRoom().getQuantity(),
-                                res.getRoom().getImg() != null ? res.getRoom().getImg().getPath() : null,
-                                null
-                        )
-                ))
-                .collect(Collectors.toList());
+                .map(res -> {
+                    Room room = res.getRoom();
+                    CategoryRoomResponse categoryRoomResponse = null;
+
+                    if (room.getCategoryRoom() != null) {
+                        var cat = room.getCategoryRoom();
+                        categoryRoomResponse = new CategoryRoomResponse(
+                                cat.getCategoryRoomId(),
+                                cat.getNameCategoryEs(),
+                                cat.getDescriptionEs(),
+                                cat.getRoomSize(),
+                                cat.getBedInfo(),
+                                null,
+                                Boolean.TRUE.equals(cat.getHasTv()),
+                                Boolean.TRUE.equals(cat.getHasAc()),
+                                Boolean.TRUE.equals(cat.getHasPrivateBathroom())
+                        );
+                    }
+
+                    String imageUrl = room.getImg() != null ? room.getImg().getPath() : null;
+
+                    return new ReservationResponse(
+                            res.getReservationId(),
+                            res.getInitDate(),
+                            res.getFinishDate(),
+                            res.getCantPeople(),
+                            res.getName(),
+                            res.getEmail(),
+                            res.getPhone(),
+                            res.getPayment(),
+                            res.getQuantityReserved(),
+                            res.getCreationDate(),
+                            new RoomResponse(
+                                    room.getRoomId(),
+                                    room.getNameEs(),
+                                    room.getMaxCapacity(),
+                                    room.getDescriptionEs(),
+                                    room.getPrice(),
+                                    room.getSizeBed(),
+                                    room.getQuantity(),
+                                    imageUrl,
+                                    room.getQuantity(), // asumes disponibilidad completa para esta respuesta
+                                    categoryRoomResponse
+                            )
+                    );
+                }).collect(Collectors.toList());
     }
 
     @Override
@@ -201,35 +220,34 @@ public class ReservationServiceImpl implements ReservationService {
             int reserved = reservationRepository.countReservedQuantityByRoomAndDates(room, initDate, finishDate);
             int disponibles = room.getQuantity() - reserved;
 
-            if (disponibles > 0) {
-                CategoryRoomResponse categoryResponse = null;
-
-                if (room.getCategoryRoom() != null) {
-                    categoryResponse = new CategoryRoomResponse(
-                            room.getCategoryRoom().getCategoryRoomId(),
-                            room.getCategoryRoom().getNameCategoryEs(),
-                            room.getCategoryRoom().getDescriptionEs(),
-                            room.getCategoryRoom().getRoomSize(),
-                            room.getCategoryRoom().getBedInfo(),
-                            null,
-                            room.getCategoryRoom().getHasTv(),
-                            room.getCategoryRoom().getHasAc(),
-                            room.getCategoryRoom().getHasPrivateBathroom()
-                    );
-                }
-
-                availableRooms.add(new RoomResponse(
-                        room.getRoomId(),
-                        room.getNameEs(),
-                        room.getMaxCapacity(),
-                        room.getDescriptionEs(),
-                        room.getPrice(),
-                        room.getSizeBed(),
-                        disponibles,
-                        room.getImg() != null ? room.getImg().getPath() : null,
-                        categoryResponse
-                ));
+            CategoryRoomResponse categoryResponse = null;
+            if (room.getCategoryRoom() != null) {
+                var cat = room.getCategoryRoom();
+                categoryResponse = new CategoryRoomResponse(
+                        cat.getCategoryRoomId(),
+                        cat.getNameCategoryEs(),
+                        cat.getDescriptionEs(),
+                        cat.getRoomSize(),
+                        cat.getBedInfo(),
+                        null,
+                        Boolean.TRUE.equals(cat.getHasTv()),
+                        Boolean.TRUE.equals(cat.getHasAc()),
+                        Boolean.TRUE.equals(cat.getHasPrivateBathroom())
+                );
             }
+
+            availableRooms.add(new RoomResponse(
+                    room.getRoomId(),
+                    room.getNameEs(),
+                    room.getMaxCapacity(),
+                    room.getDescriptionEs(),
+                    room.getPrice(),
+                    room.getSizeBed(),
+                    room.getQuantity(),
+                    room.getImg() != null ? room.getImg().getPath() : null,
+                    disponibles,
+                    categoryResponse
+            ));
         }
 
         return availableRooms;

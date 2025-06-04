@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -124,6 +125,20 @@ public class RoomController {
     public ResponseEntity<List<RoomResponse>> getAllRoomsWithCategory() {
         return ResponseEntity.ok(roomService.getAllWithCategory());
     }
+
+    @GetMapping("/available/{roomId}")
+    public ResponseEntity<?> isRoomAvailable(@PathVariable Integer roomId,
+                                             @RequestParam LocalDate initDate,
+                                             @RequestParam LocalDate finishDate) {
+        try {
+            boolean available = roomService.isRoomAvailable(roomId, initDate, finishDate);
+            return ResponseEntity.ok().body(Collections.singletonMap("available", available));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageDTO("Error al verificar disponibilidad"));
+        }
+    }
+
 
 }
 

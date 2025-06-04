@@ -39,6 +39,20 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
     );
 
 
+    @Query("""
+    SELECT COALESCE(SUM(r.quantityReserved), 0)
+    FROM Reservation r
+    WHERE r.room.roomId = :roomId
+      AND r.initDate <= :finishDate
+      AND r.finishDate >= :initDate
+""")
+    int countReservedQuantityForRoom(
+            @Param("roomId") int roomId,
+            @Param("initDate") LocalDate initDate,
+            @Param("finishDate") LocalDate finishDate
+    );
+
+
 
 
 }

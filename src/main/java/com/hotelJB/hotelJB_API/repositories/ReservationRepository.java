@@ -26,4 +26,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     // 🔁 Opcional: esto puedes eliminarlo si ya no lo usas
     @Query("SELECT r.initDate, r.finishDate FROM Reservation r")
     List<Object[]> findAllReservedDates();
+
+    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.room.roomId = :roomId AND " +
+            "r.initDate < :finishDate AND r.finishDate > :initDate")
+    int countOverlappingReservations(@Param("roomId") Integer roomId,
+                                     @Param("initDate") LocalDate initDate,
+                                     @Param("finishDate") LocalDate finishDate);
+
 }
