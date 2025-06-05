@@ -29,93 +29,77 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void save(ReservationDTO data) throws Exception {
-        try {
-            Room room = roomRepository.findById(data.getRoomId())
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
+        Room room = roomRepository.findById(data.getRoomId())
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
+        int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
+                room, data.getInitDate(), data.getFinishDate());
+
+        int available = room.getQuantity() - totalReserved;
+
+        if (available < data.getQuantityReserved()) {
+            throw new CustomException(ErrorType.NOT_AVAILABLE, "No hay suficientes habitaciones disponibles.");
+        }
+
+        Reservation reservation = new Reservation(
+                data.getInitDate(),
+                data.getFinishDate(),
+                data.getCantPeople(),
+                data.getName(),
+                data.getEmail(),
+                data.getPhone(),
+                data.getPayment(),
+                room,
+                data.getQuantityReserved()
+        );
+
+        reservation.setRoomNumber(data.getRoomNumber());
+
+        reservationRepository.save(reservation);
+    }
+
+    @Override
+    public void update(ReservationDTO data, int reservationId) throws Exception {
+        Room room = roomRepository.findById(data.getRoomId())
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
+
+        int cantidadAnterior = reservation.getQuantityReserved();
+        int diferencia = data.getQuantityReserved() - cantidadAnterior;
+
+        if (diferencia > 0) {
             int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
                     room, data.getInitDate(), data.getFinishDate());
 
             int available = room.getQuantity() - totalReserved;
 
-            if (available < data.getQuantityReserved()) {
-                throw new CustomException(ErrorType.NOT_AVAILABLE, "No hay suficientes habitaciones disponibles.");
+            if (available < diferencia) {
+                throw new CustomException(ErrorType.NOT_AVAILABLE,
+                        "No hay suficientes habitaciones disponibles para modificar esta reserva.");
             }
-
-            Reservation reservation = new Reservation(
-                    data.getInitDate(),
-                    data.getFinishDate(),
-                    data.getCantPeople(),
-                    data.getName(),
-                    data.getEmail(),
-                    data.getPhone(),
-                    data.getPayment(),
-                    room,
-                    data.getQuantityReserved()
-            );
-
-            reservationRepository.save(reservation);
-
-        } catch (CustomException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new Exception("Error al guardar la reserva: " + e.getMessage());
         }
-    }
 
-    @Override
-    public void update(ReservationDTO data, int reservationId) throws Exception {
-        try {
-            Room room = roomRepository.findById(data.getRoomId())
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
+        reservation.setInitDate(data.getInitDate());
+        reservation.setFinishDate(data.getFinishDate());
+        reservation.setCantPeople(data.getCantPeople());
+        reservation.setName(data.getName());
+        reservation.setEmail(data.getEmail());
+        reservation.setPhone(data.getPhone());
+        reservation.setPayment(data.getPayment());
+        reservation.setRoom(room);
+        reservation.setQuantityReserved(data.getQuantityReserved());
+        reservation.setRoomNumber(data.getRoomNumber());
 
-            Reservation reservation = reservationRepository.findById(reservationId)
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
-
-            int cantidadAnterior = reservation.getQuantityReserved();
-            int cantidadNueva = data.getQuantityReserved();
-            int diferencia = cantidadNueva - cantidadAnterior;
-
-            if (diferencia > 0) {
-                int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
-                        room, data.getInitDate(), data.getFinishDate());
-
-                int available = room.getQuantity() - totalReserved;
-
-                if (available < diferencia) {
-                    throw new CustomException(ErrorType.NOT_AVAILABLE,
-                            "No hay suficientes habitaciones disponibles para modificar esta reserva.");
-                }
-            }
-
-            reservation.setInitDate(data.getInitDate());
-            reservation.setFinishDate(data.getFinishDate());
-            reservation.setCantPeople(data.getCantPeople());
-            reservation.setName(data.getName());
-            reservation.setEmail(data.getEmail());
-            reservation.setPhone(data.getPhone());
-            reservation.setPayment(data.getPayment());
-            reservation.setRoom(room);
-            reservation.setQuantityReserved(cantidadNueva);
-
-            reservationRepository.save(reservation);
-        } catch (CustomException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new Exception("Error al actualizar la reserva: " + e.getMessage());
-        }
+        reservationRepository.save(reservation);
     }
 
     @Override
     public void delete(int reservationId) throws Exception {
-        try {
-            Reservation reservation = reservationRepository.findById(reservationId)
-                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
-
-            reservationRepository.delete(reservation);
-        } catch (Exception e) {
-            throw new Exception("Error delete reservation");
-        }
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
+        reservationRepository.delete(reservation);
     }
 
     @Override
@@ -191,11 +175,10 @@ public class ReservationServiceImpl implements ReservationService {
                             room.getSizeBed(),
                             room.getQuantity(),
                             imageUrl,
-                            room.getQuantity(), // disponible actual asumida
+                            room.getQuantity(),
                             categoryRoomResponse
                     );
 
-                    // 📆 Lógica de estado de la reserva
                     String status;
                     LocalDate today = LocalDate.now();
                     if (res.getFinishDate().isBefore(today)) {
@@ -218,12 +201,11 @@ public class ReservationServiceImpl implements ReservationService {
                             res.getQuantityReserved(),
                             res.getCreationDate(),
                             status,
-                            roomResponse
+                            roomResponse,
+                            res.getRoomNumber()
                     );
-
                 }).collect(Collectors.toList());
     }
-
 
     @Override
     public List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int cantPeople) {
@@ -259,13 +241,105 @@ public class ReservationServiceImpl implements ReservationService {
                     room.getDescriptionEs(),
                     room.getPrice(),
                     room.getSizeBed(),
-                    room.getQuantity(),
+                    disponibles, // antidad total ahora es la disponible
                     room.getImg() != null ? room.getImg().getPath() : null,
-                    disponibles,
+                    disponibles, //cantidad disponible también es la correcta
                     categoryResponse
             ));
+
         }
 
         return availableRooms;
     }
+
+    @Override
+    public void assignRoomNumber(int reservationId, String roomNumber) throws Exception {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
+
+        boolean roomInUse = reservationRepository.findActiveByRoomNumber(roomNumber).isPresent();
+        if (roomInUse) {
+            throw new CustomException(ErrorType.NOT_AVAILABLE, "Esa habitación ya está asignada a otra reserva activa.");
+        }
+
+        reservation.setRoomNumber(roomNumber);
+        reservationRepository.save(reservation);
+    }
+
+    @Override
+    public Reservation getActiveReservationByRoomNumber(String roomNumber) throws Exception {
+        return reservationRepository.findActiveByRoomNumber(roomNumber)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reserva activa no encontrada."));
+    }
+
+    @Override
+    public boolean isRoomNumberInUse(String roomNumber) {
+        return reservationRepository.findActiveByRoomNumber(roomNumber).isPresent();
+    }
+
+    @Override
+    public ReservationResponse getByRoomNumber(String roomNumber) throws Exception {
+        Reservation reservation = reservationRepository.findTopByRoomNumber(roomNumber)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
+
+        Room room = reservation.getRoom();
+
+        CategoryRoomResponse categoryRoomResponse = null;
+        if (room.getCategoryRoom() != null) {
+            var cat = room.getCategoryRoom();
+            categoryRoomResponse = new CategoryRoomResponse(
+                    cat.getCategoryRoomId(),
+                    cat.getNameCategoryEs(),
+                    cat.getDescriptionEs(),
+                    cat.getRoomSize(),
+                    cat.getBedInfo(),
+                    null,
+                    Boolean.TRUE.equals(cat.getHasTv()),
+                    Boolean.TRUE.equals(cat.getHasAc()),
+                    Boolean.TRUE.equals(cat.getHasPrivateBathroom())
+            );
+        }
+
+        String imageUrl = room.getImg() != null ? room.getImg().getPath() : null;
+
+        RoomResponse roomResponse = new RoomResponse(
+                room.getRoomId(),
+                room.getNameEs(),
+                room.getMaxCapacity(),
+                room.getDescriptionEs(),
+                room.getPrice(),
+                room.getSizeBed(),
+                room.getQuantity(),
+                imageUrl,
+                room.getQuantity(),
+                categoryRoomResponse
+        );
+
+        String status;
+        LocalDate today = LocalDate.now();
+        if (reservation.getFinishDate().isBefore(today)) {
+            status = "FINALIZADA";
+        } else if (reservation.getInitDate().isAfter(today)) {
+            status = "FUTURA";
+        } else {
+            status = "ACTIVA";
+        }
+
+        return new ReservationResponse(
+                reservation.getReservationId(),
+                reservation.getInitDate(),
+                reservation.getFinishDate(),
+                reservation.getCantPeople(),
+                reservation.getName(),
+                reservation.getEmail(),
+                reservation.getPhone(),
+                reservation.getPayment(),
+                reservation.getQuantityReserved(),
+                reservation.getCreationDate(),
+                status,
+                roomResponse,
+                reservation.getRoomNumber()
+        );
+    }
+
 }

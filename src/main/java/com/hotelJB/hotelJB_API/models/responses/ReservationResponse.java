@@ -18,7 +18,8 @@ public class ReservationResponse {
     private String phone;
     private double payment;
     private int quantityReserved;
-    private LocalDateTime creationDate; // <-- Este campo estará correctamente serializado
+    private LocalDateTime creationDate;
     private String status;
     private RoomResponse room;
+    private String roomNumber;
 }

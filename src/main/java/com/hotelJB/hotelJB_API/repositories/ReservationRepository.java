@@ -8,10 +8,10 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-    // ✅ Nueva: total de habitaciones reservadas en rango de fechas
     @Query("""
         SELECT COALESCE(SUM(r.quantityReserved), 0) FROM Reservation r
         WHERE r.room = :room
@@ -23,7 +23,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
             @Param("finishDate") LocalDate finishDate
     );
 
-    // 🔁 Opcional: esto puedes eliminarlo si ya no lo usas
     @Query("SELECT r.initDate, r.finishDate FROM Reservation r")
     List<Object[]> findAllReservedDates();
 
@@ -33,8 +32,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                                      @Param("initDate") LocalDate initDate,
                                      @Param("finishDate") LocalDate finishDate);
 
+    // 🔄 NUEVO: reserva activa según fechas
+    @Query("""
+        SELECT r FROM Reservation r
+        WHERE r.roomNumber = :roomNumber
+        AND r.initDate <= CURRENT_DATE
+        AND r.finishDate >= CURRENT_DATE
+    """)
+    Optional<Reservation> findActiveByRoomNumber(@Param("roomNumber") String roomNumber);
 
-    // List<Reservation> findByFinishDateBeforeAndStatus(LocalDate fecha, String status);
-
-
+    Optional<Reservation> findTopByRoomNumber(String roomNumber);
 }

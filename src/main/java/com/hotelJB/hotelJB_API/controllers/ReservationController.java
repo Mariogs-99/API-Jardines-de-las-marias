@@ -2,6 +2,7 @@ package com.hotelJB.hotelJB_API.controllers;
 
 import com.hotelJB.hotelJB_API.models.dtos.MessageDTO;
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
+import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
@@ -72,7 +73,7 @@ public class ReservationController {
         if (id != null) {
             return new ResponseEntity<>(reservationService.findById(id), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(reservationService.getAllResponses(), HttpStatus.OK); // ✅ Esto devuelve con status
+            return new ResponseEntity<>(reservationService.getAllResponses(), HttpStatus.OK);
         }
     }
 
@@ -91,8 +92,6 @@ public class ReservationController {
         }
     }
 
-    //?Endpoint de habitaciones disponibles en base a fechas
-
     @GetMapping("/available-rooms")
     public ResponseEntity<List<RoomResponse>> getAvailableRooms(
             @RequestParam("initDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate initDate,
@@ -103,4 +102,32 @@ public class ReservationController {
         return ResponseEntity.ok(availableRooms);
     }
 
+    // 🔹 NUEVO: asignar número de habitación manualmente
+    @PutMapping("/{id}/assign-room")
+    public ResponseEntity<?> assignRoomNumber(
+            @PathVariable Integer id,
+            @RequestParam String roomNumber
+    ) {
+        try {
+            reservationService.assignRoomNumber(id, roomNumber);
+            return new ResponseEntity<>(new MessageDTO("Room number assigned successfully"), HttpStatus.OK);
+        } catch (CustomException e) {
+            return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new MessageDTO("Error assigning room number"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 🔹 NUEVO: buscar reserva por número de habitación
+    @GetMapping("/by-room")
+    public ResponseEntity<?> getByRoomNumber(@RequestParam String roomNumber) {
+        try {
+            ReservationResponse response = reservationService.getByRoomNumber(roomNumber);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (CustomException e) {
+            return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

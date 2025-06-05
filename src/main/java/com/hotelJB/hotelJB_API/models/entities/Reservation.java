@@ -43,6 +43,9 @@ public class Reservation {
     @Column(name = "quantity_reserved")
     private int quantityReserved;
 
+    @Column(name = "room_number")
+    private String roomNumber; // ✅ Campo agregado correctamente
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "creation_date", updatable = false)
     private LocalDateTime creationDate;

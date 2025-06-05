@@ -19,4 +19,5 @@ public class ReservationDTO {
     private double payment;
     private Integer roomId;
     private int quantityReserved;
+    private String roomNumber;
 }
