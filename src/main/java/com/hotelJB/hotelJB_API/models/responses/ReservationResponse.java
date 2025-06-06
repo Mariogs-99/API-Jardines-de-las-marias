@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,6 +21,12 @@ public class ReservationResponse {
     private int quantityReserved;
     private LocalDateTime creationDate;
     private String status;
-    private RoomResponse room;
+
+    // ⛔ Se reemplaza esto:
+    // private RoomResponse room;
+
+    // ✅ Se reemplaza por esto:
+    private List<ReservationRoomResponse> rooms;
+
     private String roomNumber;
 }

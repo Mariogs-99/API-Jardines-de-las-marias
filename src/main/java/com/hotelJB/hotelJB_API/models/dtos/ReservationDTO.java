@@ -1,14 +1,10 @@
 package com.hotelJB.hotelJB_API.models.dtos;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ReservationDTO {
     private LocalDate initDate;
     private LocalDate finishDate;
@@ -16,8 +12,10 @@ public class ReservationDTO {
     private String name;
     private String email;
     private String phone;
-    private double payment;
-    private Integer roomId;
-    private int quantityReserved;
-    private String roomNumber;
+    private float payment;
+
+    // Lista de habitaciones en lugar de solo un roomId
+    private List<ReservationRoomDTO> rooms;
+
+    private String roomNumber; // opcional según tu lógica actual
 }

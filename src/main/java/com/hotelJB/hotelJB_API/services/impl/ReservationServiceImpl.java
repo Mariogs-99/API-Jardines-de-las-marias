@@ -2,12 +2,16 @@ package com.hotelJB.hotelJB_API.services.impl;
 
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
+import com.hotelJB.hotelJB_API.models.entities.ReservationRoom;
 import com.hotelJB.hotelJB_API.models.entities.Room;
 import com.hotelJB.hotelJB_API.models.responses.CategoryRoomResponse;
 import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
+import com.hotelJB.hotelJB_API.models.responses.ReservationRoomResponse;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.repositories.ReservationRepository;
+import com.hotelJB.hotelJB_API.repositories.ReservationRoomRepository;
 import com.hotelJB.hotelJB_API.repositories.RoomRepository;
+import com.hotelJB.hotelJB_API.services.ReservationRoomService;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,20 +32,14 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private RoomRepository roomRepository;
 
+    @Autowired
+    private ReservationRoomRepository reservationRoomRepository;
+
+    @Autowired
+    private ReservationRoomService reservationRoomService;
+
     @Override
     public void save(ReservationDTO data) throws Exception {
-        Room room = roomRepository.findById(data.getRoomId())
-                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
-
-        int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
-                room, data.getInitDate(), data.getFinishDate());
-
-        int available = room.getQuantity() - totalReserved;
-
-        if (available < data.getQuantityReserved()) {
-            throw new CustomException(ErrorType.NOT_AVAILABLE, "No hay suficientes habitaciones disponibles.");
-        }
-
         Reservation reservation = new Reservation(
                 data.getInitDate(),
                 data.getFinishDate(),
@@ -49,37 +48,20 @@ public class ReservationServiceImpl implements ReservationService {
                 data.getEmail(),
                 data.getPhone(),
                 data.getPayment(),
-                room,
-                data.getQuantityReserved()
+                null,
+                0
         );
 
         reservation.setRoomNumber(data.getRoomNumber());
-
         reservationRepository.save(reservation);
+
+        reservationRoomService.saveRoomsForReservation(reservation.getReservationId(), data.getRooms());
     }
 
     @Override
     public void update(ReservationDTO data, int reservationId) throws Exception {
-        Room room = roomRepository.findById(data.getRoomId())
-                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
-
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
-
-        int cantidadAnterior = reservation.getQuantityReserved();
-        int diferencia = data.getQuantityReserved() - cantidadAnterior;
-
-        if (diferencia > 0) {
-            int totalReserved = reservationRepository.countReservedQuantityByRoomAndDates(
-                    room, data.getInitDate(), data.getFinishDate());
-
-            int available = room.getQuantity() - totalReserved;
-
-            if (available < diferencia) {
-                throw new CustomException(ErrorType.NOT_AVAILABLE,
-                        "No hay suficientes habitaciones disponibles para modificar esta reserva.");
-            }
-        }
 
         reservation.setInitDate(data.getInitDate());
         reservation.setFinishDate(data.getFinishDate());
@@ -88,11 +70,12 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setEmail(data.getEmail());
         reservation.setPhone(data.getPhone());
         reservation.setPayment(data.getPayment());
-        reservation.setRoom(room);
-        reservation.setQuantityReserved(data.getQuantityReserved());
         reservation.setRoomNumber(data.getRoomNumber());
 
         reservationRepository.save(reservation);
+
+        reservationRoomService.deleteByReservationId(reservationId);
+        reservationRoomService.saveRoomsForReservation(reservationId, data.getRooms());
     }
 
     @Override
@@ -146,38 +129,17 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationResponse> getAllResponses() {
         return reservationRepository.findAll().stream()
                 .map(res -> {
-                    Room room = res.getRoom();
-                    CategoryRoomResponse categoryRoomResponse = null;
+                    List<ReservationRoom> reservationRooms = reservationRoomRepository.findByReservation_ReservationId(res.getReservationId());
 
-                    if (room.getCategoryRoom() != null) {
-                        var cat = room.getCategoryRoom();
-                        categoryRoomResponse = new CategoryRoomResponse(
-                                cat.getCategoryRoomId(),
-                                cat.getNameCategoryEs(),
-                                cat.getDescriptionEs(),
-                                cat.getRoomSize(),
-                                cat.getBedInfo(),
-                                null,
-                                Boolean.TRUE.equals(cat.getHasTv()),
-                                Boolean.TRUE.equals(cat.getHasAc()),
-                                Boolean.TRUE.equals(cat.getHasPrivateBathroom())
-                        );
-                    }
-
-                    String imageUrl = room.getImg() != null ? room.getImg().getPath() : null;
-
-                    RoomResponse roomResponse = new RoomResponse(
-                            room.getRoomId(),
-                            room.getNameEs(),
-                            room.getMaxCapacity(),
-                            room.getDescriptionEs(),
-                            room.getPrice(),
-                            room.getSizeBed(),
-                            room.getQuantity(),
-                            imageUrl,
-                            room.getQuantity(),
-                            categoryRoomResponse
-                    );
+                    List<ReservationRoomResponse> roomResponses = reservationRooms.stream().map(rr -> {
+                        Room r = rr.getRoom();
+                        ReservationRoomResponse resp = new ReservationRoomResponse();
+                        resp.setRoomId(r.getRoomId());
+                        resp.setRoomName(r.getNameEs());
+                        resp.setAssignedRoomNumber(rr.getAssignedRoomNumber());
+                        resp.setQuantity(rr.getQuantity());
+                        return resp;
+                    }).collect(Collectors.toList());
 
                     String status;
                     LocalDate today = LocalDate.now();
@@ -201,7 +163,7 @@ public class ReservationServiceImpl implements ReservationService {
                             res.getQuantityReserved(),
                             res.getCreationDate(),
                             status,
-                            roomResponse,
+                            roomResponses,
                             res.getRoomNumber()
                     );
                 }).collect(Collectors.toList());
@@ -241,12 +203,11 @@ public class ReservationServiceImpl implements ReservationService {
                     room.getDescriptionEs(),
                     room.getPrice(),
                     room.getSizeBed(),
-                    disponibles, // antidad total ahora es la disponible
+                    disponibles,
                     room.getImg() != null ? room.getImg().getPath() : null,
-                    disponibles, //cantidad disponible también es la correcta
+                    disponibles,
                     categoryResponse
             ));
-
         }
 
         return availableRooms;
@@ -282,38 +243,17 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationRepository.findTopByRoomNumber(roomNumber)
                 .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
 
-        Room room = reservation.getRoom();
+        List<ReservationRoom> reservationRooms = reservationRoomRepository.findByReservation_ReservationId(reservation.getReservationId());
 
-        CategoryRoomResponse categoryRoomResponse = null;
-        if (room.getCategoryRoom() != null) {
-            var cat = room.getCategoryRoom();
-            categoryRoomResponse = new CategoryRoomResponse(
-                    cat.getCategoryRoomId(),
-                    cat.getNameCategoryEs(),
-                    cat.getDescriptionEs(),
-                    cat.getRoomSize(),
-                    cat.getBedInfo(),
-                    null,
-                    Boolean.TRUE.equals(cat.getHasTv()),
-                    Boolean.TRUE.equals(cat.getHasAc()),
-                    Boolean.TRUE.equals(cat.getHasPrivateBathroom())
-            );
-        }
-
-        String imageUrl = room.getImg() != null ? room.getImg().getPath() : null;
-
-        RoomResponse roomResponse = new RoomResponse(
-                room.getRoomId(),
-                room.getNameEs(),
-                room.getMaxCapacity(),
-                room.getDescriptionEs(),
-                room.getPrice(),
-                room.getSizeBed(),
-                room.getQuantity(),
-                imageUrl,
-                room.getQuantity(),
-                categoryRoomResponse
-        );
+        List<ReservationRoomResponse> roomResponses = reservationRooms.stream().map(rr -> {
+            Room r = rr.getRoom();
+            ReservationRoomResponse resp = new ReservationRoomResponse();
+            resp.setRoomId(r.getRoomId());
+            resp.setRoomName(r.getNameEs());
+            resp.setAssignedRoomNumber(rr.getAssignedRoomNumber());
+            resp.setQuantity(rr.getQuantity());
+            return resp;
+        }).collect(Collectors.toList());
 
         String status;
         LocalDate today = LocalDate.now();
@@ -337,9 +277,8 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getQuantityReserved(),
                 reservation.getCreationDate(),
                 status,
-                roomResponse,
+                roomResponses,
                 reservation.getRoomNumber()
         );
     }
-
 }
