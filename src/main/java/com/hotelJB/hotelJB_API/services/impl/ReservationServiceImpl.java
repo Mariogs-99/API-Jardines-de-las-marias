@@ -1,6 +1,7 @@
 package com.hotelJB.hotelJB_API.services.impl;
 
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
+import com.hotelJB.hotelJB_API.models.dtos.ReservationRoomDTO;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import com.hotelJB.hotelJB_API.models.entities.ReservationRoom;
 import com.hotelJB.hotelJB_API.models.entities.Room;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -281,4 +281,25 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getRoomNumber()
         );
     }
+
+    @Override
+    public void assignRoomNumbers(int reservationId, List<ReservationRoomDTO> assignments) throws Exception {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
+
+        List<ReservationRoom> reservationRooms = reservationRoomRepository.findByReservation_ReservationId(reservationId);
+
+        for (ReservationRoomDTO dto : assignments) {
+            for (ReservationRoom rr : reservationRooms) {
+                if (rr.getRoom().getRoomId() == dto.getRoomId()) {
+                    rr.setAssignedRoomNumber(dto.getAssignedRoomNumber());
+                    // opcional: si deseas actualizar la cantidad
+                    rr.setQuantity(dto.getQuantity());
+                }
+            }
+        }
+
+        reservationRoomRepository.saveAll(reservationRooms);
+    }
+
 }

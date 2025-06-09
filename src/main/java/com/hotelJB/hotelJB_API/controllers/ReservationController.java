@@ -2,6 +2,7 @@ package com.hotelJB.hotelJB_API.controllers;
 
 import com.hotelJB.hotelJB_API.models.dtos.MessageDTO;
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
+import com.hotelJB.hotelJB_API.models.dtos.ReservationRoomDTO;
 import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.services.ReservationService;
@@ -102,21 +103,21 @@ public class ReservationController {
         return ResponseEntity.ok(availableRooms);
     }
 
-    // 🔹 NUEVO: asignar número de habitación manualmente
-    @PutMapping("/{id}/assign-room")
-    public ResponseEntity<?> assignRoomNumber(
+    @PutMapping("/{id}/assign-rooms")
+    public ResponseEntity<?> assignRoomNumbers(
             @PathVariable Integer id,
-            @RequestParam String roomNumber
+            @RequestBody List<ReservationRoomDTO> assignments
     ) {
         try {
-            reservationService.assignRoomNumber(id, roomNumber);
-            return new ResponseEntity<>(new MessageDTO("Room number assigned successfully"), HttpStatus.OK);
+            reservationService.assignRoomNumbers(id, assignments);
+            return new ResponseEntity<>(new MessageDTO("Números de habitación asignados correctamente"), HttpStatus.OK);
         } catch (CustomException e) {
             return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(new MessageDTO("Error assigning room number"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new MessageDTO("Error al asignar los números de habitación"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     // 🔹 NUEVO: buscar reserva por número de habitación
     @GetMapping("/by-room")

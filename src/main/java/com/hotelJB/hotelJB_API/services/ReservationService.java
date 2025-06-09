@@ -1,6 +1,7 @@
 package com.hotelJB.hotelJB_API.services;
 
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
+import com.hotelJB.hotelJB_API.models.dtos.ReservationRoomDTO;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
@@ -46,4 +47,7 @@ public interface ReservationService {
 
     // Verificar si un número de habitación está actualmente en uso en una reserva activa
     boolean isRoomNumberInUse(String roomNumber);
+
+
+    void assignRoomNumbers(int reservationId, List<ReservationRoomDTO> assignments) throws Exception;
 }
