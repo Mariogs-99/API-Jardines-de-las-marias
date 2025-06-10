@@ -40,6 +40,12 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void save(ReservationDTO data) throws Exception {
+        // ✅ Sumar la cantidad de habitaciones reservadas
+        int totalReserved = data.getRooms().stream()
+                .mapToInt(room -> room.getQuantity())
+                .sum();
+
+        // ✅ Crear la reserva con el total reservado
         Reservation reservation = new Reservation(
                 data.getInitDate(),
                 data.getFinishDate(),
@@ -48,15 +54,28 @@ public class ReservationServiceImpl implements ReservationService {
                 data.getEmail(),
                 data.getPhone(),
                 data.getPayment(),
-                null,
-                0
+                null, // puedes pasar data.getRoomNumber() si quieres
+                totalReserved // ✅ cantidad de habitaciones reservadas
         );
 
+        // ✅ Asignar número de habitación si aplica
         reservation.setRoomNumber(data.getRoomNumber());
+
+        // ✅ (Opcional) asignar primer room como referencia principal
+        if (!data.getRooms().isEmpty()) {
+            int firstRoomId = data.getRooms().get(0).getRoomId();
+            Room room = roomRepository.findById(firstRoomId)
+                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
+            reservation.setRoom(room);
+        }
+
+        // ✅ Guardar reserva principal
         reservationRepository.save(reservation);
 
+        // ✅ Guardar relación con habitaciones
         reservationRoomService.saveRoomsForReservation(reservation.getReservationId(), data.getRooms());
     }
+
 
     @Override
     public void update(ReservationDTO data, int reservationId) throws Exception {

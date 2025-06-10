@@ -106,14 +106,16 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int maxCapacity, String lang) {
         return roomRepository.findAll().stream()
-                .filter(room -> room.getMaxCapacity() >= maxCapacity)
                 .map(room -> {
                     int reserved = roomRepository.countReservedQuantityForRoom(room.getRoomId(), initDate, finishDate);
                     int available = room.getQuantity() - reserved;
                     return mapToRoomResponse(room, available);
                 })
+                //.filter(...) eliminado para incluir todas las habitaciones
                 .collect(Collectors.toList());
     }
+
+
 
     @Override
     public List<RoomResponse> findByLanguage(String language) {
