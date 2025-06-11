@@ -50,4 +50,7 @@ public interface ReservationService {
 
 
     void assignRoomNumbers(int reservationId, List<ReservationRoomDTO> assignments) throws Exception;
+
+    void saveEntity(Reservation reservation);
+
 }

@@ -13,15 +13,20 @@ import java.util.Optional;
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
     @Query("""
-        SELECT COALESCE(SUM(r.quantityReserved), 0) FROM Reservation r
-        WHERE r.room = :room
-        AND (r.initDate < :finishDate AND r.finishDate > :initDate)
-    """)
+    SELECT COALESCE(SUM(rr.quantity), 0)
+    FROM ReservationRoom rr
+    JOIN rr.reservation r
+    WHERE rr.room = :room
+      AND r.status != 'FINALIZADA'
+      AND r.initDate <= :endDate
+      AND r.finishDate >= :startDate
+""")
     int countReservedQuantityByRoomAndDates(
             @Param("room") Room room,
-            @Param("initDate") LocalDate initDate,
-            @Param("finishDate") LocalDate finishDate
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
     );
+
 
     @Query("SELECT r.initDate, r.finishDate FROM Reservation r")
     List<Object[]> findAllReservedDates();

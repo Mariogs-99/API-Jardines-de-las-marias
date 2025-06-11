@@ -24,7 +24,7 @@ public class AvailabilitySchedulerService {
     }
 
     // ⏰ Ejecuta todos los días a las 00:00
-    @Scheduled(cron = "0 0 0 * * *") // Hora del servidor
+  // @Scheduled(cron = "0 0 0 * * *") // Hora del servidor
     @Transactional
     public void updateRoomAvailability() {
         log.info("📆 Iniciando actualización de disponibilidad de habitaciones...");

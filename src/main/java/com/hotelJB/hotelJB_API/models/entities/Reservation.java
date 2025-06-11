@@ -44,7 +44,10 @@ public class Reservation {
     private int quantityReserved;
 
     @Column(name = "room_number")
-    private String roomNumber; // ✅ Campo agregado correctamente
+    private String roomNumber;
+
+    @Column(name = "status", nullable = false)
+    private String status; //Nuevo campo para control manual del estado
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "creation_date", updatable = false)

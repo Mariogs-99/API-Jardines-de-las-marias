@@ -3,10 +3,12 @@ package com.hotelJB.hotelJB_API.controllers;
 import com.hotelJB.hotelJB_API.models.dtos.MessageDTO;
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
 import com.hotelJB.hotelJB_API.models.dtos.ReservationRoomDTO;
+import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
 import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
+import com.hotelJB.hotelJB_API.utils.ErrorType;
 import com.hotelJB.hotelJB_API.utils.RequestErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +58,7 @@ public class ReservationController {
             reservationService.update(data, id);
             return new ResponseEntity<>(new MessageDTO("Reservation updated"), HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -118,8 +122,6 @@ public class ReservationController {
         }
     }
 
-
-    // 🔹 NUEVO: buscar reserva por número de habitación
     @GetMapping("/by-room")
     public ResponseEntity<?> getByRoomNumber(@RequestParam String roomNumber) {
         try {
@@ -129,6 +131,34 @@ public class ReservationController {
             return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Cambiar estado manualmente
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<?> actualizarEstado(
+            @PathVariable Integer id,
+            @RequestParam("nuevoEstado") String nuevoEstado
+    ) {
+        try {
+            List<String> estadosValidos = Arrays.asList("FUTURA", "ACTIVA", "FINALIZADA");
+
+            if (!estadosValidos.contains(nuevoEstado.toUpperCase())) {
+                return new ResponseEntity<>(new MessageDTO("Estado inválido. Usa: ACTIVA, FUTURA o FINALIZADA"), HttpStatus.BAD_REQUEST);
+            }
+
+            Reservation reservation = reservationService.findById(id)
+                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
+
+            reservation.setStatus(nuevoEstado.toUpperCase());
+            reservationService.saveEntity(reservation); // este método debe estar en el service
+
+            return new ResponseEntity<>(new MessageDTO("Estado actualizado a: " + nuevoEstado.toUpperCase()), HttpStatus.OK);
+
+        } catch (CustomException e) {
+            return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new MessageDTO("Error al actualizar estado"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

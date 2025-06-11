@@ -16,6 +16,7 @@ import com.hotelJB.hotelJB_API.services.ReservationRoomService;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,12 +41,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void save(ReservationDTO data) throws Exception {
-        // ✅ Sumar la cantidad de habitaciones reservadas
         int totalReserved = data.getRooms().stream()
                 .mapToInt(room -> room.getQuantity())
                 .sum();
 
-        // ✅ Crear la reserva con el total reservado
         Reservation reservation = new Reservation(
                 data.getInitDate(),
                 data.getFinishDate(),
@@ -54,14 +53,14 @@ public class ReservationServiceImpl implements ReservationService {
                 data.getEmail(),
                 data.getPhone(),
                 data.getPayment(),
-                null, // puedes pasar data.getRoomNumber() si quieres
-                totalReserved // ✅ cantidad de habitaciones reservadas
+                null,
+                totalReserved
         );
 
-        // ✅ Asignar número de habitación si aplica
+        String initialStatus = data.getInitDate().isAfter(LocalDate.now()) ? "FUTURA" : "ACTIVA";
+        reservation.setStatus(initialStatus);
         reservation.setRoomNumber(data.getRoomNumber());
 
-        // ✅ (Opcional) asignar primer room como referencia principal
         if (!data.getRooms().isEmpty()) {
             int firstRoomId = data.getRooms().get(0).getRoomId();
             Room room = roomRepository.findById(firstRoomId)
@@ -69,15 +68,13 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setRoom(room);
         }
 
-        // ✅ Guardar reserva principal
         reservationRepository.save(reservation);
-
-        // ✅ Guardar relación con habitaciones
         reservationRoomService.saveRoomsForReservation(reservation.getReservationId(), data.getRooms());
     }
 
 
     @Override
+    @Transactional
     public void update(ReservationDTO data, int reservationId) throws Exception {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Reservation"));
@@ -90,12 +87,14 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setPhone(data.getPhone());
         reservation.setPayment(data.getPayment());
         reservation.setRoomNumber(data.getRoomNumber());
+        reservation.setStatus(data.getStatus());
 
         reservationRepository.save(reservation);
 
         reservationRoomService.deleteByReservationId(reservationId);
         reservationRoomService.saveRoomsForReservation(reservationId, data.getRooms());
     }
+
 
     @Override
     public void delete(int reservationId) throws Exception {
@@ -160,16 +159,6 @@ public class ReservationServiceImpl implements ReservationService {
                         return resp;
                     }).collect(Collectors.toList());
 
-                    String status;
-                    LocalDate today = LocalDate.now();
-                    if (res.getFinishDate().isBefore(today)) {
-                        status = "FINALIZADA";
-                    } else if (res.getInitDate().isAfter(today)) {
-                        status = "FUTURA";
-                    } else {
-                        status = "ACTIVA";
-                    }
-
                     return new ReservationResponse(
                             res.getReservationId(),
                             res.getInitDate(),
@@ -181,7 +170,7 @@ public class ReservationServiceImpl implements ReservationService {
                             res.getPayment(),
                             res.getQuantityReserved(),
                             res.getCreationDate(),
-                            status,
+                            res.getStatus(), // ← status persistente
                             roomResponses,
                             res.getRoomNumber()
                     );
@@ -194,9 +183,10 @@ public class ReservationServiceImpl implements ReservationService {
         List<RoomResponse> availableRooms = new ArrayList<>();
 
         for (Room room : allRooms) {
-            if (room.getMaxCapacity() < cantPeople) continue;
+            int reserved = reservationRoomRepository.countReservedQuantityForRoomInRange(
+                    room.getRoomId(), initDate, finishDate
+            );
 
-            int reserved = reservationRepository.countReservedQuantityByRoomAndDates(room, initDate, finishDate);
             int disponibles = room.getQuantity() - reserved;
 
             CategoryRoomResponse categoryResponse = null;
@@ -222,10 +212,11 @@ public class ReservationServiceImpl implements ReservationService {
                     room.getDescriptionEs(),
                     room.getPrice(),
                     room.getSizeBed(),
-                    disponibles,
+                    room.getQuantity(),
                     room.getImg() != null ? room.getImg().getPath() : null,
                     disponibles,
-                    categoryResponse
+                    categoryResponse,
+                    disponibles > 0
             ));
         }
 
@@ -274,16 +265,6 @@ public class ReservationServiceImpl implements ReservationService {
             return resp;
         }).collect(Collectors.toList());
 
-        String status;
-        LocalDate today = LocalDate.now();
-        if (reservation.getFinishDate().isBefore(today)) {
-            status = "FINALIZADA";
-        } else if (reservation.getInitDate().isAfter(today)) {
-            status = "FUTURA";
-        } else {
-            status = "ACTIVA";
-        }
-
         return new ReservationResponse(
                 reservation.getReservationId(),
                 reservation.getInitDate(),
@@ -295,7 +276,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getPayment(),
                 reservation.getQuantityReserved(),
                 reservation.getCreationDate(),
-                status,
+                reservation.getStatus(), // ← status persistente
                 roomResponses,
                 reservation.getRoomNumber()
         );
@@ -312,13 +293,17 @@ public class ReservationServiceImpl implements ReservationService {
             for (ReservationRoom rr : reservationRooms) {
                 if (rr.getRoom().getRoomId() == dto.getRoomId()) {
                     rr.setAssignedRoomNumber(dto.getAssignedRoomNumber());
-                    // opcional: si deseas actualizar la cantidad
                     rr.setQuantity(dto.getQuantity());
                 }
             }
         }
 
         reservationRoomRepository.saveAll(reservationRooms);
+    }
+
+    @Override
+    public void saveEntity(Reservation reservation) {
+        reservationRepository.save(reservation);
     }
 
 }

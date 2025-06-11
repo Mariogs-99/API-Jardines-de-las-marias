@@ -107,7 +107,7 @@ public class RoomServiceImpl implements RoomService {
     public List<RoomResponse> getAvailableRooms(LocalDate initDate, LocalDate finishDate, int maxCapacity, String lang) {
         return roomRepository.findAll().stream()
                 .map(room -> {
-                    int reserved = roomRepository.countReservedQuantityForRoom(room.getRoomId(), initDate, finishDate);
+                    int reserved = reservationRepository.countReservedQuantityByRoomAndDates(room, initDate, finishDate);
                     int available = room.getQuantity() - reserved;
                     return mapToRoomResponse(room, available);
                 })
@@ -165,7 +165,8 @@ public class RoomServiceImpl implements RoomService {
                 room.getQuantity(),
                 imageUrl,
                 availableQuantity,
-                categoryRoomResponse
+                categoryRoomResponse,
+                availableQuantity > 0
         );
 
     }

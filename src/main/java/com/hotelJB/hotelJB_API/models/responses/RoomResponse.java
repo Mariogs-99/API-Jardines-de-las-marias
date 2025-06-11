@@ -18,4 +18,6 @@ public class RoomResponse {
     private String imageUrl;
     private int availableQuantity;
     private CategoryRoomResponse categoryRoom; // <-- ahora es un objeto, no un int
+    private boolean available; // ← Nuevo campo
+
 }
