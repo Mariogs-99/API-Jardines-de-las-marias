@@ -39,14 +39,15 @@ public class ReservationController {
         }
 
         try {
-            reservationService.save(data);
-            return new ResponseEntity<>(new MessageDTO("Reservation created"), HttpStatus.OK);
+            ReservationResponse response = reservationService.save(data);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (CustomException e) {
             return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody ReservationDTO data, @PathVariable Integer id, BindingResult validations) throws Exception {

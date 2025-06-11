@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -47,7 +49,10 @@ public class Reservation {
     private String roomNumber;
 
     @Column(name = "status", nullable = false)
-    private String status; //Nuevo campo para control manual del estado
+    private String status;
+
+    @Column(name = "reservation_code", nullable = false, unique = true)
+    private String reservationCode;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "creation_date", updatable = false)
@@ -56,6 +61,12 @@ public class Reservation {
     @PrePersist
     public void prePersist() {
         this.creationDate = LocalDateTime.now();
+
+        if (this.reservationCode == null || this.reservationCode.isEmpty()) {
+            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String random = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+            this.reservationCode = "RES-" + fecha + "-" + random;
+        }
     }
 
     @ManyToOne(fetch = FetchType.EAGER)

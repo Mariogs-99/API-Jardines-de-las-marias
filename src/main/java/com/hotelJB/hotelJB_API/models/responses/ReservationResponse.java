@@ -11,6 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ReservationResponse {
     private int reservationId;
+    private String reservationCode;
+
     private LocalDate initDate;
     private LocalDate finishDate;
     private int cantPeople;
@@ -22,11 +24,6 @@ public class ReservationResponse {
     private LocalDateTime creationDate;
     private String status;
 
-    // ⛔ Se reemplaza esto:
-    // private RoomResponse room;
-
-    // ✅ Se reemplaza por esto:
     private List<ReservationRoomResponse> rooms;
-
     private String roomNumber;
 }

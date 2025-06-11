@@ -40,9 +40,9 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationRoomService reservationRoomService;
 
     @Override
-    public void save(ReservationDTO data) throws Exception {
+    public ReservationResponse save(ReservationDTO data) throws Exception {
         int totalReserved = data.getRooms().stream()
-                .mapToInt(room -> room.getQuantity())
+                .mapToInt(ReservationRoomDTO::getQuantity)
                 .sum();
 
         Reservation reservation = new Reservation(
@@ -70,8 +70,35 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservationRepository.save(reservation);
         reservationRoomService.saveRoomsForReservation(reservation.getReservationId(), data.getRooms());
-    }
 
+        List<ReservationRoomResponse> roomResponses = data.getRooms().stream().map(roomDTO -> {
+            Room r = roomRepository.findById(roomDTO.getRoomId())
+                    .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
+            ReservationRoomResponse resp = new ReservationRoomResponse();
+            resp.setRoomId(r.getRoomId());
+            resp.setRoomName(r.getNameEs());
+            resp.setAssignedRoomNumber(roomDTO.getAssignedRoomNumber());
+            resp.setQuantity(roomDTO.getQuantity());
+            return resp;
+        }).collect(Collectors.toList());
+
+        return new ReservationResponse(
+                reservation.getReservationId(),
+                reservation.getReservationCode(),
+                reservation.getInitDate(),
+                reservation.getFinishDate(),
+                reservation.getCantPeople(),
+                reservation.getName(),
+                reservation.getEmail(),
+                reservation.getPhone(),
+                reservation.getPayment(),
+                reservation.getQuantityReserved(),
+                reservation.getCreationDate(),
+                reservation.getStatus(),
+                roomResponses,
+                reservation.getRoomNumber()
+        );
+    }
 
     @Override
     @Transactional
@@ -94,7 +121,6 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRoomService.deleteByReservationId(reservationId);
         reservationRoomService.saveRoomsForReservation(reservationId, data.getRooms());
     }
-
 
     @Override
     public void delete(int reservationId) throws Exception {
@@ -161,6 +187,7 @@ public class ReservationServiceImpl implements ReservationService {
 
                     return new ReservationResponse(
                             res.getReservationId(),
+                            res.getReservationCode(),
                             res.getInitDate(),
                             res.getFinishDate(),
                             res.getCantPeople(),
@@ -170,7 +197,7 @@ public class ReservationServiceImpl implements ReservationService {
                             res.getPayment(),
                             res.getQuantityReserved(),
                             res.getCreationDate(),
-                            res.getStatus(), // ← status persistente
+                            res.getStatus(),
                             roomResponses,
                             res.getRoomNumber()
                     );
@@ -267,6 +294,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         return new ReservationResponse(
                 reservation.getReservationId(),
+                reservation.getReservationCode(),
                 reservation.getInitDate(),
                 reservation.getFinishDate(),
                 reservation.getCantPeople(),
@@ -276,7 +304,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getPayment(),
                 reservation.getQuantityReserved(),
                 reservation.getCreationDate(),
-                reservation.getStatus(), // ← status persistente
+                reservation.getStatus(),
                 roomResponses,
                 reservation.getRoomNumber()
         );
@@ -305,5 +333,4 @@ public class ReservationServiceImpl implements ReservationService {
     public void saveEntity(Reservation reservation) {
         reservationRepository.save(reservation);
     }
-
 }

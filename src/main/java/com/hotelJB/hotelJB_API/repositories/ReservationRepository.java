@@ -47,4 +47,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     Optional<Reservation> findActiveByRoomNumber(@Param("roomNumber") String roomNumber);
 
     Optional<Reservation> findTopByRoomNumber(String roomNumber);
+
+    Optional<Reservation> findByReservationCode(String reservationCode);
+
 }

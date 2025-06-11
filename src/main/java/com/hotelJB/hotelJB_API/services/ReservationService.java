@@ -13,8 +13,7 @@ import java.util.Optional;
 
 public interface ReservationService {
     // Crear una nueva reserva
-    void save(ReservationDTO data) throws Exception;
-
+    ReservationResponse save(ReservationDTO data) throws Exception;
     // Actualizar una reserva existente
     void update(ReservationDTO data, int reservationId) throws Exception;
 
