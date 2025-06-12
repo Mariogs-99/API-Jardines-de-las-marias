@@ -79,8 +79,10 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
             auth.requestMatchers("/uploads/**").permitAll();
             auth.requestMatchers("/menu/**").permitAll();
             auth.requestMatchers("/api/auth/**").permitAll();
+            auth.requestMatchers("/api/paypal/**").permitAll();
             auth.requestMatchers(HttpMethod.GET, "/api/**").permitAll();
             auth.requestMatchers(HttpMethod.POST, "/api/reservation/**").permitAll();
+
             auth.anyRequest().authenticated();
         });
 
