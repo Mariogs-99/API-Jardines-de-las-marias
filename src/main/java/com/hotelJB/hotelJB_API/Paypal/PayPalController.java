@@ -1,6 +1,6 @@
 package com.hotelJB.hotelJB_API.Paypal;
 
-import com.hotelJB.hotelJB_API.services.PayPalClient;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

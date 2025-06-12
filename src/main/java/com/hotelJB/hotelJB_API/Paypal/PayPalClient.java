@@ -1,4 +1,4 @@
-package com.hotelJB.hotelJB_API.services;
+package com.hotelJB.hotelJB_API.Paypal;
 
 import okhttp3.*;
 import com.fasterxml.jackson.databind.JsonNode;
