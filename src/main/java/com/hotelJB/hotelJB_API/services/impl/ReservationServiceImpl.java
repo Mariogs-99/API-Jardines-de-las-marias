@@ -12,6 +12,8 @@ import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.repositories.ReservationRepository;
 import com.hotelJB.hotelJB_API.repositories.ReservationRoomRepository;
 import com.hotelJB.hotelJB_API.repositories.RoomRepository;
+import com.hotelJB.hotelJB_API.services.GmailApiSenderService;
+import com.hotelJB.hotelJB_API.services.GmailSenderService;
 import com.hotelJB.hotelJB_API.services.ReservationRoomService;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
@@ -38,6 +40,14 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private ReservationRoomService reservationRoomService;
+
+    @Autowired
+    private GmailSenderService gmailSenderService;
+
+    @Autowired
+    private GmailApiSenderService gmailApiSenderService;
+
+
 
     @Override
     public ReservationResponse save(ReservationDTO data) throws Exception {
@@ -82,6 +92,84 @@ public class ReservationServiceImpl implements ReservationService {
             return resp;
         }).collect(Collectors.toList());
 
+        // ✉️ Generar HTML del correo
+        String htmlBody = String.format("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body {
+              font-family: 'Segoe UI', sans-serif;
+              background-color: #f4f4f4;
+              padding: 20px;
+              color: #333;
+            }
+            .container {
+              background-color: #ffffff;
+              border-radius: 10px;
+              padding: 20px;
+              max-width: 600px;
+              margin: auto;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            h2 {
+              color: #006d77;
+            }
+            .footer {
+              font-size: 0.9em;
+              color: #777;
+              text-align: center;
+              margin-top: 20px;
+            }
+            .resumen {
+              background-color: #f0f0f0;
+              padding: 15px;
+              border-radius: 8px;
+            }
+            strong {
+              color: #000;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h2>¡Gracias por su reserva, %s!</h2>
+            <p>Hemos confirmado su reservación en <strong>Hotel Jardines de las Marías</strong>.</p>
+
+            <div class="resumen">
+              <p><strong>📅 Fecha de entrada:</strong> %s</p>
+              <p><strong>📅 Fecha de salida:</strong> %s</p>
+              <p><strong>👥 Personas:</strong> %d</p>
+              <p><strong>🛏️ Habitaciones:</strong> %d</p>
+              <p><strong>🔐 Código:</strong> <span style="color:#006d77;">%s</span></p>
+            </div>
+
+            <p>Si tiene dudas, puede responder este correo o llamarnos.</p>
+
+            <div class="footer">
+              Hotel Jardines de las Marías<br/>
+              Este es un mensaje automático. No lo responda si no desea asistencia.
+            </div>
+          </div>
+        </body>
+        </html>
+        """,
+                reservation.getName(),
+                reservation.getInitDate(),
+                reservation.getFinishDate(),
+                reservation.getCantPeople(),
+                reservation.getQuantityReserved(),
+                reservation.getReservationCode()
+        );
+
+        // ✉️ Enviar correo
+        gmailApiSenderService.sendMail(
+                reservation.getEmail(),
+                "Confirmación de Reserva - Hotel Jardines de las Marías",
+                htmlBody
+        );
+
+        // ✅ Devolver la respuesta
         return new ReservationResponse(
                 reservation.getReservationId(),
                 reservation.getReservationCode(),
@@ -99,6 +187,8 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getRoomNumber()
         );
     }
+
+
 
     @Override
     @Transactional
