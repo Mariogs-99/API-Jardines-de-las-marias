@@ -23,7 +23,7 @@ public class ContactMessageController {
           <style>
             body {
               font-family: 'Segoe UI', sans-serif;
-              background-color: #f5f5f5;
+              background-color: #f6f6f6;
               padding: 30px;
               color: #333;
             }
@@ -33,31 +33,40 @@ public class ContactMessageController {
               border-radius: 10px;
               max-width: 700px;
               margin: auto;
-              box-shadow: 0 0 12px rgba(0,0,0,0.1);
+              box-shadow: 0 0 12px rgba(0,0,0,0.05);
+            }
+            .logo {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            .logo img {
+              height: 90px;
             }
             h2 {
-              color: #8B5A2B;
+              color: #4A8B2C;
+              font-size: 1.6rem;
               margin-bottom: 20px;
-              font-size: 1.5rem;
+              text-align: center;
             }
             .section-title {
               font-weight: 600;
-              margin-top: 20px;
               font-size: 1rem;
-              color: #444;
+              color: #6A4A3C;
+              margin-top: 25px;
+              margin-bottom: 8px;
             }
             .info {
-              background-color: #f9f9f9;
+              background-color: #fefefe;
+              border: 1px solid #eee;
               padding: 15px 20px;
               border-radius: 8px;
-              margin-top: 10px;
               font-size: 0.95rem;
             }
             .info p {
-              margin: 6px 0;
+              margin: 8px 0;
             }
             .highlight {
-              color: #8B5A2B;
+              color: #4A8B2C;
               font-weight: 600;
             }
             .footer {
@@ -70,7 +79,11 @@ public class ContactMessageController {
         </head>
         <body>
           <div class="container">
-            <h2>📩 Nueva solicitud de cotización</h2>
+            <div class="logo">
+              <img src="https://jardindelasmarias.com/assets/logo-img-CyEqdf2n.png" alt="Hotel Jardines de las Marías" />
+            </div>
+
+            <h2>📋 Nueva solicitud de cotización</h2>
 
             <div class="section-title">Datos del cliente:</div>
             <div class="info">
@@ -105,7 +118,7 @@ public class ContactMessageController {
         );
 
         gmailApiSenderService.sendMail(
-                "escobar.mario@globalsolutionslt.com",  // correo destino
+                "meev2399@gmail.com",
                 "📋 Nueva cotización recibida - Jardines de las Marías",
                 html
         );
