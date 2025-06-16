@@ -12,4 +12,7 @@ public interface ExperienceService {
     void delete(Long id);
     List<ExperienceResponse> getAll();
     ExperienceResponse getById(Long id);
+
+    // ✅ NUEVO MÉTODO PÚBLICO PARA EL FRONTEND
+    List<ExperienceResponse> getAllPublic(String lang);
 }

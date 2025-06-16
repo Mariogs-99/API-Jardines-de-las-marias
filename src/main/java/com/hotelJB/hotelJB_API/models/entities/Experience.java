@@ -18,10 +18,14 @@ public class Experience {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long experienceId;
 
-    private String title;
+    private String titleEs;
+    private String titleEn;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String descriptionEs;
+
+    @Column(columnDefinition = "TEXT")
+    private String descriptionEn;
 
     private String duration;
 
@@ -29,7 +33,11 @@ public class Experience {
 
     private Double price;
 
-    private String availableDays;
+    @Column(name = "available_days_es")
+    private String availableDaysEs;
+
+    @Column(name = "available_days_en")
+    private String availableDaysEn;
 
     private String imageUrl;
 

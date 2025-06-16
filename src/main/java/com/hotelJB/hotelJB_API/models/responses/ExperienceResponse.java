@@ -9,13 +9,25 @@ import lombok.*;
 @Builder
 public class ExperienceResponse {
 
-    private Long experienceId;
     private String title;
     private String description;
+    private String availableDays;
+
+    private Long experienceId;
+
+    private String titleEs;
+    private String titleEn;
+
+    private String descriptionEs;
+    private String descriptionEn;
+
     private String duration;
     private Integer capacity;
     private Double price;
-    private String availableDays;
+
+    private String availableDaysEs;
+    private String availableDaysEn;
+
     private String imageUrl;
     private Boolean active;
 }

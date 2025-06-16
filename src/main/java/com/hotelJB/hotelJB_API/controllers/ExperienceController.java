@@ -76,4 +76,11 @@ public class ExperienceController {
         }
     }
 
+    @GetMapping("/public")
+    public ResponseEntity<List<ExperienceResponse>> getPublicExperiences(
+            @RequestParam(defaultValue = "es") String lang) {
+        return ResponseEntity.ok(experienceService.getAllPublic(lang));
+    }
+
+
 }
