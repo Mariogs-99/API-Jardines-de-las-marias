@@ -15,11 +15,20 @@ import java.time.LocalDate;
 public class EventDTO {
 
     private Long id;
-    private String title;
-    private String description;
+
+    private String titleEs;
+    private String titleEn;
+
+    private String descriptionEs;
+    private String descriptionEn;
+
     private LocalDate eventDate;
+
     private Integer capacity;
+
     private BigDecimal price;
+
     private String imageUrl;
+
     private boolean active;
 }

@@ -14,12 +14,18 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventWithImageDTO {
-    private String title;
-    private String description;
+
+    private String titleEs;
+    private String titleEn;
+
+    private String descriptionEs;
+    private String descriptionEn;
+
     private LocalDate eventDate;
     private Integer capacity;
     private BigDecimal price;
+
     private MultipartFile image;
 
-    private boolean active; // Evento activo
+    private boolean active;
 }

@@ -22,10 +22,15 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String titleEs;
+
+    private String titleEn;
 
     @Column(length = 1000)
-    private String description;
+    private String descriptionEs;
+
+    @Column(length = 1000)
+    private String descriptionEn;
 
     private LocalDate eventDate;
 
@@ -33,7 +38,6 @@ public class Event {
 
     private BigDecimal price;
 
-    // 🔄 Reemplazamos imageUrl por relación a Img
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "img_id")
     private Img img;

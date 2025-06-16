@@ -4,6 +4,7 @@ import com.hotelJB.hotelJB_API.models.dtos.EventDTO;
 import com.hotelJB.hotelJB_API.models.dtos.EventWithImageDTO;
 import com.hotelJB.hotelJB_API.models.entities.Event;
 import com.hotelJB.hotelJB_API.models.entities.Img;
+import com.hotelJB.hotelJB_API.models.responses.EventResponse;
 import com.hotelJB.hotelJB_API.repositories.EventRepository;
 import com.hotelJB.hotelJB_API.repositories.ImgRepository;
 import com.hotelJB.hotelJB_API.services.EventService;
@@ -52,8 +53,10 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
 
-        event.setTitle(dto.getTitle());
-        event.setDescription(dto.getDescription());
+        event.setTitleEs(dto.getTitleEs());
+        event.setTitleEn(dto.getTitleEn());
+        event.setDescriptionEs(dto.getDescriptionEs());
+        event.setDescriptionEn(dto.getDescriptionEn());
         event.setEventDate(dto.getEventDate());
         event.setCapacity(dto.getCapacity());
         event.setPrice(dto.getPrice());
@@ -68,19 +71,20 @@ public class EventServiceImpl implements EventService {
         eventRepository.deleteById(id);
     }
 
-    // DTO ↔ Entity conversion
     private EventDTO toDTO(Event event) {
         EventDTO dto = new EventDTO();
         dto.setId(event.getId());
-        dto.setTitle(event.getTitle());
-        dto.setDescription(event.getDescription());
+        dto.setTitleEs(event.getTitleEs());
+        dto.setTitleEn(event.getTitleEn());
+        dto.setDescriptionEs(event.getDescriptionEs());
+        dto.setDescriptionEn(event.getDescriptionEn());
         dto.setEventDate(event.getEventDate());
         dto.setCapacity(event.getCapacity());
         dto.setPrice(event.getPrice());
         dto.setActive(event.isActive());
 
         if (event.getImg() != null) {
-            dto.setImageUrl(event.getImg() != null ? event.getImg().getPath() : null);
+            dto.setImageUrl(event.getImg().getPath());
         }
 
         return dto;
@@ -88,17 +92,17 @@ public class EventServiceImpl implements EventService {
 
     private Event toEntity(EventDTO dto) {
         Event event = new Event();
-        event.setTitle(dto.getTitle());
-        event.setDescription(dto.getDescription());
+        event.setTitleEs(dto.getTitleEs());
+        event.setTitleEn(dto.getTitleEn());
+        event.setDescriptionEs(dto.getDescriptionEs());
+        event.setDescriptionEn(dto.getDescriptionEn());
         event.setEventDate(dto.getEventDate());
         event.setCapacity(dto.getCapacity());
         event.setPrice(dto.getPrice());
         event.setActive(dto.isActive());
-        // No se asigna imagen aquí
         return event;
     }
 
-    // Crear evento con imagen
     @Override
     public void saveEventWithImage(EventWithImageDTO dto) {
         try {
@@ -118,8 +122,10 @@ public class EventServiceImpl implements EventService {
             imgRepository.save(img);
 
             Event event = new Event();
-            event.setTitle(dto.getTitle());
-            event.setDescription(dto.getDescription());
+            event.setTitleEs(dto.getTitleEs());
+            event.setTitleEn(dto.getTitleEn());
+            event.setDescriptionEs(dto.getDescriptionEs());
+            event.setDescriptionEn(dto.getDescriptionEn());
             event.setEventDate(dto.getEventDate());
             event.setCapacity(dto.getCapacity());
             event.setPrice(dto.getPrice());
@@ -130,20 +136,20 @@ public class EventServiceImpl implements EventService {
 
             eventRepository.save(event);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Error al guardar evento con imagen", e);
         }
     }
 
-    // Actualizar evento con imagen opcional
     @Override
     public void updateEventWithImage(Long eventId, EventWithImageDTO dto) {
         try {
             Event event = eventRepository.findById(eventId)
                     .orElseThrow(() -> new RuntimeException("Evento no encontrado"));
 
-            event.setTitle(dto.getTitle());
-            event.setDescription(dto.getDescription());
+            event.setTitleEs(dto.getTitleEs());
+            event.setTitleEn(dto.getTitleEn());
+            event.setDescriptionEs(dto.getDescriptionEs());
+            event.setDescriptionEn(dto.getDescriptionEn());
             event.setEventDate(dto.getEventDate());
             event.setCapacity(dto.getCapacity());
             event.setPrice(dto.getPrice());
@@ -166,30 +172,29 @@ public class EventServiceImpl implements EventService {
                 Img img = new Img(fileName, relativePath);
                 imgRepository.save(img);
 
-                event.setImg(img); // ✅ relación
+                event.setImg(img);
             }
 
             eventRepository.save(event);
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Error al actualizar evento con imagen", e);
         }
     }
 
-    // Eventos activos del lado del cliente
-
-    public List<Event> getPublicEvents() {
-        return eventRepository.findByActiveTrueOrderByEventDateAsc();
-    }
-
-    // eventos activos o no activos del lado del administrador
-
-    public List<EventDTO> getAllAdmin() {
-        return eventRepository.findAll().stream()
-                .map(this::toDTO)
+    @Override
+    public List<EventResponse> getPublicEvents(String lang) {
+        return eventRepository.findByActiveTrueOrderByEventDateAsc()
+                .stream()
+                .map(event -> new EventResponse(event, lang))
                 .collect(Collectors.toList());
     }
 
-
+    @Override
+    public List<EventDTO> getAllAdmin() {
+        return eventRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
 }
