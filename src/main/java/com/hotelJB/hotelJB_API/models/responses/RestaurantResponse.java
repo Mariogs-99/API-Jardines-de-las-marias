@@ -7,9 +7,17 @@ import lombok.Setter;
 @Setter
 public class RestaurantResponse {
     private Long restaurantId;
+
+    // Español
     private String name;
     private String description;
     private String schedule;
+
+    // Inglés
+    private String nameEn;
+    private String descriptionEn;
+    private String scheduleEn;
+
     private String pdfMenuUrl;
     private String imgUrl;
     private boolean highlighted;

@@ -28,6 +28,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setName(dto.getName());
         restaurant.setDescription(dto.getDescription());
         restaurant.setSchedule(dto.getSchedule());
+        restaurant.setNameEn(dto.getNameEn());
+        restaurant.setDescriptionEn(dto.getDescriptionEn());
+        restaurant.setScheduleEn(dto.getScheduleEn());
         restaurant.setPdfMenuUrl(dto.getPdfMenuUrl());
         restaurant.setImgUrl(dto.getImgUrl());
         restaurant.setHighlighted(dto.isHighlighted());
@@ -37,13 +40,18 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public RestaurantResponse createWithFiles(String name, String description, String schedule, boolean highlighted,
-                                              MultipartFile image, MultipartFile pdf) {
+    public RestaurantResponse createWithFiles(
+            String name, String description, String schedule,
+            String nameEn, String descriptionEn, String scheduleEn,
+            boolean highlighted, MultipartFile image, MultipartFile pdf) {
 
         Restaurant restaurant = new Restaurant();
         restaurant.setName(name);
         restaurant.setDescription(description);
         restaurant.setSchedule(schedule);
+        restaurant.setNameEn(nameEn);
+        restaurant.setDescriptionEn(descriptionEn);
+        restaurant.setScheduleEn(scheduleEn);
         restaurant.setHighlighted(highlighted);
 
         if (image != null && !image.isEmpty()) {
@@ -61,8 +69,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public RestaurantResponse updateWithFiles(Long id, String name, String description, String schedule,
-                                              boolean highlighted, MultipartFile image, MultipartFile pdf) {
+    public RestaurantResponse updateWithFiles(
+            Long id, String name, String description, String schedule,
+            String nameEn, String descriptionEn, String scheduleEn,
+            boolean highlighted, MultipartFile image, MultipartFile pdf) {
 
         Restaurant restaurant = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Restaurante no encontrado con id: " + id));
@@ -70,6 +80,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setName(name);
         restaurant.setDescription(description);
         restaurant.setSchedule(schedule);
+        restaurant.setNameEn(nameEn);
+        restaurant.setDescriptionEn(descriptionEn);
+        restaurant.setScheduleEn(scheduleEn);
         restaurant.setHighlighted(highlighted);
 
         if (image != null && !image.isEmpty()) {
@@ -122,6 +135,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         res.setName(r.getName());
         res.setDescription(r.getDescription());
         res.setSchedule(r.getSchedule());
+        res.setNameEn(r.getNameEn());
+        res.setDescriptionEn(r.getDescriptionEn());
+        res.setScheduleEn(r.getScheduleEn());
         res.setPdfMenuUrl(r.getPdfMenuUrl());
         res.setImgUrl(r.getImgUrl());
         res.setHighlighted(r.isHighlighted());

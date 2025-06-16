@@ -35,8 +35,6 @@ public class RestaurantController {
         return ResponseEntity.ok(service.getHighlighted());
     }
 
-    //? Subir PDF del menu
-
     @PostMapping("/upload-pdf")
     public ResponseEntity<String> uploadMenuPdf(@RequestParam("file") MultipartFile file) {
         try {
@@ -50,7 +48,6 @@ public class RestaurantController {
             File dest = new File(filePath);
             file.transferTo(dest);
 
-            // Devuelve la ruta relativa para guardar en la BD
             String relativePath = "/menu/" + file.getOriginalFilename();
             return ResponseEntity.ok(relativePath);
 
@@ -59,39 +56,50 @@ public class RestaurantController {
         }
     }
 
-    // ✅ Crear restaurante con imagen y PDF
+    // ✅ Crear restaurante con imagen y PDF (con soporte para inglés)
     @PostMapping("/with-files")
     public ResponseEntity<RestaurantResponse> createWithFiles(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("schedule") String schedule,
+            @RequestParam("nameEn") String nameEn,
+            @RequestParam("descriptionEn") String descriptionEn,
+            @RequestParam("scheduleEn") String scheduleEn,
             @RequestParam("highlighted") boolean highlighted,
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam(value = "pdf", required = false) MultipartFile pdf
     ) {
-        return ResponseEntity.ok(service.createWithFiles(name, description, schedule, highlighted, image, pdf));
+        return ResponseEntity.ok(service.createWithFiles(
+                name, description, schedule,
+                nameEn, descriptionEn, scheduleEn,
+                highlighted, image, pdf
+        ));
     }
 
-    // ✅ Actualizar restaurante con imagen y PDF
+    // ✅ Actualizar restaurante con imagen y PDF (con soporte para inglés)
     @PutMapping("/with-files/{id}")
     public ResponseEntity<RestaurantResponse> updateWithFiles(
             @PathVariable Long id,
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("schedule") String schedule,
+            @RequestParam("nameEn") String nameEn,
+            @RequestParam("descriptionEn") String descriptionEn,
+            @RequestParam("scheduleEn") String scheduleEn,
             @RequestParam("highlighted") boolean highlighted,
             @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam(value = "pdf", required = false) MultipartFile pdf
     ) {
-        return ResponseEntity.ok(service.updateWithFiles(id, name, description, schedule, highlighted, image, pdf));
+        return ResponseEntity.ok(service.updateWithFiles(
+                id, name, description, schedule,
+                nameEn, descriptionEn, scheduleEn,
+                highlighted, image, pdf
+        ));
     }
 
-    // ✅ Eliminar restaurante
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

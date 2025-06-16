@@ -8,13 +8,20 @@ import java.util.List;
 
 public interface RestaurantService {
     RestaurantResponse create(RestaurantDTO dto);
+
+    RestaurantResponse createWithFiles(
+            String name, String description, String schedule,
+            String nameEn, String descriptionEn, String scheduleEn,
+            boolean highlighted, MultipartFile image, MultipartFile pdf);
+
+    RestaurantResponse updateWithFiles(
+            Long id, String name, String description, String schedule,
+            String nameEn, String descriptionEn, String scheduleEn,
+            boolean highlighted, MultipartFile image, MultipartFile pdf);
+
     List<RestaurantResponse> getAll();
     List<RestaurantResponse> getHighlighted();
-    RestaurantResponse createWithFiles(String name, String description, String schedule, boolean highlighted,
-                                       MultipartFile image, MultipartFile pdf);
 
-    RestaurantResponse updateWithFiles(Long id, String name, String description, String schedule, boolean highlighted,
-                                       MultipartFile image, MultipartFile pdf);
 
     void delete(Long id);
 
