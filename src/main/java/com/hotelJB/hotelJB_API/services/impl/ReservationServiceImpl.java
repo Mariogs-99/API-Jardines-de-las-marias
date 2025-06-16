@@ -94,73 +94,108 @@ public class ReservationServiceImpl implements ReservationService {
 
         // ✉️ Generar HTML del correo
         String htmlBody = String.format("""
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body {
-              font-family: 'Segoe UI', sans-serif;
-              background-color: #f4f4f4;
-              padding: 20px;
-              color: #333;
-            }
-            .container {
-              background-color: #ffffff;
-              border-radius: 10px;
-              padding: 20px;
-              max-width: 600px;
-              margin: auto;
-              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            h2 {
-              color: #006d77;
-            }
-            .footer {
-              font-size: 0.9em;
-              color: #777;
-              text-align: center;
-              margin-top: 20px;
-            }
-            .resumen {
-              background-color: #f0f0f0;
-              padding: 15px;
-              border-radius: 8px;
-            }
-            strong {
-              color: #000;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <h2>¡Gracias por su reserva, %s!</h2>
-            <p>Hemos confirmado su reservación en <strong>Hotel Jardines de las Marías</strong>.</p>
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+              <meta charset="UTF-8">
+              <style>
+                body {
+                  font-family: 'Segoe UI', sans-serif;
+                  background-color: #f6f6f6;
+                  padding: 30px;
+                  color: #333;
+                }
+                .container {
+                  background-color: #ffffff;
+                  padding: 30px;
+                  border-radius: 10px;
+                  max-width: 700px;
+                  margin: auto;
+                  box-shadow: 0 0 12px rgba(0,0,0,0.05);
+                }
+                .logo {
+                  text-align: center;
+                  margin-bottom: 25px;
+                }
+                .logo img {
+                  height: 90px;
+                }
+                h2 {
+                  color: #4A8B2C;
+                  font-size: 1.6rem;
+                  margin-bottom: 20px;
+                  text-align: center;
+                }
+                .section-title {
+                  font-weight: 600;
+                  font-size: 1rem;
+                  color: #6A4A3C;
+                  margin-top: 25px;
+                  margin-bottom: 10px;
+                }
+                .info {
+                  background-color: #fefefe;
+                  border: 1px solid #eee;
+                  padding: 15px 20px;
+                  border-radius: 8px;
+                  font-size: 0.95rem;
+                }
+                .info p {
+                  margin: 8px 0;
+                }
+                .highlight {
+                  color: #4A8B2C;
+                  font-weight: 600;
+                }
+                .code {
+                  font-size: 1.3rem;
+                  font-weight: bold;
+                  color: #006d77;
+                  text-align: center;
+                  margin-top: 20px;
+                }
+                .footer {
+                  margin-top: 30px;
+                  font-size: 0.85rem;
+                  color: #777;
+                  text-align: center;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="logo">
+                  <img src="https://jardindelasmarias.com/assets/logo-img-CyEqdf2n.png" alt="Hotel Jardines de las Marías" />
+                </div>
+            
+                <h2>¡Gracias por su reserva, %s!</h2>
+            
+                <div class="section-title">Resumen de la reserva</div>
+                <div class="info">
+                  <p><span class="highlight">Fecha de entrada:</span> %s</p>
+                  <p><span class="highlight">Fecha de salida:</span> %s</p>
+                  <p><span class="highlight">Cantidad de personas:</span> %d</p>
+                  <p><span class="highlight">Cantidad de habitaciones:</span> %d</p>
+                </div>
+            
+                <div class="code">Código de Reserva: %s</div>
+            
+                <div class="footer">
+                  Hotel Jardines de las Marías<br/>
+                  Este es un mensaje automático. Si necesita asistencia, contáctenos.
+                </div>
+              </div>
+            </body>
+            </html>
+            """,
+                            reservation.getName(),
+                            reservation.getInitDate(),
+                            reservation.getFinishDate(),
+                            reservation.getCantPeople(),
+                            reservation.getQuantityReserved(),
+                            reservation.getReservationCode()
+                    );
 
-            <div class="resumen">
-              <p><strong>📅 Fecha de entrada:</strong> %s</p>
-              <p><strong>📅 Fecha de salida:</strong> %s</p>
-              <p><strong>👥 Personas:</strong> %d</p>
-              <p><strong>🛏️ Habitaciones:</strong> %d</p>
-              <p><strong>🔐 Código:</strong> <span style="color:#006d77;">%s</span></p>
-            </div>
-
-            <p>Si tiene dudas, puede responder este correo o llamarnos.</p>
-
-            <div class="footer">
-              Hotel Jardines de las Marías<br/>
-              Este es un mensaje automático. No lo responda si no desea asistencia.
-            </div>
-          </div>
-        </body>
-        </html>
-        """,
-                reservation.getName(),
-                reservation.getInitDate(),
-                reservation.getFinishDate(),
-                reservation.getCantPeople(),
-                reservation.getQuantityReserved(),
-                reservation.getReservationCode()
-        );
 
         // ✉️ Enviar correo
         gmailApiSenderService.sendMail(

@@ -63,9 +63,8 @@ public class Reservation {
         this.creationDate = LocalDateTime.now();
 
         if (this.reservationCode == null || this.reservationCode.isEmpty()) {
-            String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            String random = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-            this.reservationCode = "RES-" + fecha + "-" + random;
+            String random = UUID.randomUUID().toString().substring(0, 8).toUpperCase().replaceAll("[^A-Z0-9]", "");
+            this.reservationCode = "JDM-" + random;
         }
     }
 
