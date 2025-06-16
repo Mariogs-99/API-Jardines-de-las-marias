@@ -445,9 +445,21 @@ public class ReservationServiceImpl implements ReservationService {
         List<ReservationRoom> reservationRooms = reservationRoomRepository.findByReservation_ReservationId(reservationId);
 
         for (ReservationRoomDTO dto : assignments) {
+            String assignedNumber = dto.getAssignedRoomNumber();
+
+            if (assignedNumber != null && !assignedNumber.trim().isEmpty()) {
+                boolean alreadyAssigned = reservationRoomRepository
+                        .existsByAssignedRoomNumberAndOtherReservation(assignedNumber.trim(), reservationId);
+
+                if (alreadyAssigned) {
+                    throw new CustomException(ErrorType.NOT_AVAILABLE,
+                            "La habitación número '" + assignedNumber + "' ya está asignada a otra reserva.");
+                }
+            }
+
             for (ReservationRoom rr : reservationRooms) {
                 if (rr.getRoom().getRoomId() == dto.getRoomId()) {
-                    rr.setAssignedRoomNumber(dto.getAssignedRoomNumber());
+                    rr.setAssignedRoomNumber(assignedNumber);
                     rr.setQuantity(dto.getQuantity());
                 }
             }
@@ -455,6 +467,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservationRoomRepository.saveAll(reservationRooms);
     }
+
 
     @Override
     public void saveEntity(Reservation reservation) {

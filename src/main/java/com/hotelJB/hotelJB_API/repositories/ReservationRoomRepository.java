@@ -28,5 +28,14 @@ public interface ReservationRoomRepository extends JpaRepository<ReservationRoom
     );
 
 
+    @Query("""
+SELECT COUNT(rr) > 0 FROM ReservationRoom rr
+JOIN rr.reservation res
+WHERE rr.assignedRoomNumber = :assignedRoomNumber
+AND res.status IN ('ACTIVA', 'FUTURA')
+AND res.reservationId != :reservationId
+""")
+    boolean existsByAssignedRoomNumberAndOtherReservation(String assignedRoomNumber, int reservationId);
+
 
 }
