@@ -53,15 +53,16 @@ public class RoomServiceImpl implements RoomService {
 
         Room room = new Room(
                 data.getNameEs(),
-                null,
+                data.getNameEn(),
                 data.getMaxCapacity(),
                 data.getDescriptionEs(),
-                null,
+                data.getDescriptionEn(),
                 data.getPrice(),
                 data.getSizeBed(),
                 categoryRoom,
                 data.getQuantity()
         );
+
 
         roomRepository.save(room);
     }
@@ -75,8 +76,10 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND, "Room"));
 
         room.setNameEs(data.getNameEs());
+        room.setNameEn(data.getNameEn());
         room.setMaxCapacity(data.getMaxCapacity());
         room.setDescriptionEs(data.getDescriptionEs());
+        room.setDescriptionEn(data.getDescriptionEn());
         room.setPrice(data.getPrice());
         room.setSizeBed(data.getSizeBed());
         room.setQuantity(data.getQuantity());
@@ -158,8 +161,10 @@ public class RoomServiceImpl implements RoomService {
         return new RoomResponse(
                 room.getRoomId(),
                 room.getNameEs(),
+                room.getNameEn(),
                 room.getMaxCapacity(),
                 room.getDescriptionEs(),
+                room.getDescriptionEn(),
                 room.getPrice(),
                 room.getSizeBed(),
                 room.getQuantity(),
@@ -194,10 +199,10 @@ public class RoomServiceImpl implements RoomService {
 
             Room room = new Room(
                     dto.getNameEs(),
-                    null,
+                    dto.getNameEn(),
                     dto.getMaxCapacity(),
                     dto.getDescriptionEs(),
-                    null,
+                    dto.getDescriptionEn(),
                     dto.getPrice(),
                     dto.getSizeBed(),
                     categoryRoom,
@@ -217,6 +222,8 @@ public class RoomServiceImpl implements RoomService {
                     .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
 
             room.setNameEs(dto.getNameEs());
+            room.setNameEn(dto.getNameEn());
+            room.setDescriptionEn(dto.getDescriptionEn());
             room.setMaxCapacity(dto.getMaxCapacity());
             room.setDescriptionEs(dto.getDescriptionEs());
             room.setPrice(dto.getPrice());

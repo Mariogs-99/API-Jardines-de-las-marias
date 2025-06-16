@@ -325,8 +325,10 @@ public class ReservationServiceImpl implements ReservationService {
             availableRooms.add(new RoomResponse(
                     room.getRoomId(),
                     room.getNameEs(),
+                    room.getNameEn(),
                     room.getMaxCapacity(),
                     room.getDescriptionEs(),
+                    room.getDescriptionEn(),
                     room.getPrice(),
                     room.getSizeBed(),
                     room.getQuantity(),

@@ -9,15 +9,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoomResponse {
     private int roomId;
-    private String name;
+    private String nameEs;
+    private String nameEn;
     private int maxCapacity;
-    private String description;
+    private String descriptionEs;
+    private String descriptionEn;
     private double price;
     private String sizeBed;
     private int quantity;
     private String imageUrl;
     private int availableQuantity;
-    private CategoryRoomResponse categoryRoom; // <-- ahora es un objeto, no un int
-    private boolean available; // ← Nuevo campo
-
+    private CategoryRoomResponse categoryRoom;
+    private boolean available;
 }
