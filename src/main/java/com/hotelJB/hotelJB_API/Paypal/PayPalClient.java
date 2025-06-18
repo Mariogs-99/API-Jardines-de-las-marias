@@ -3,7 +3,8 @@ package com.hotelJB.hotelJB_API.Paypal;
 import okhttp3.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
+import com.hotelJB.hotelJB_API.config.EnvConfig; // 👈 Importá EnvConfig
+
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -12,20 +13,17 @@ import java.util.Base64;
 @Component
 public class PayPalClient {
 
-    @Value("${paypal.client-id}")
-    private String clientId;
-
-    @Value("${paypal.client-secret}")
-    private String clientSecret;
-
-    @Value("${paypal.api-base}")
-    private String baseUrl;
-
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
 
     public String getAccessToken() throws IOException {
+        String clientId = EnvConfig.getPaypalClientId();
+        String clientSecret = EnvConfig.getPaypalSecret();
+        String baseUrl = EnvConfig.getPaypalApiBase();
+
         String credential = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
+
+
 
         Request request = new Request.Builder()
                 .url(baseUrl + "/v1/oauth2/token")
@@ -47,6 +45,7 @@ public class PayPalClient {
 
     public String createOrder(double total) throws IOException {
         String accessToken = getAccessToken();
+        String baseUrl = EnvConfig.getPaypalApiBase();
 
         String jsonBody = "{\n" +
                 "  \"intent\": \"CAPTURE\",\n" +

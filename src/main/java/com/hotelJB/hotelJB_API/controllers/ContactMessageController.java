@@ -80,10 +80,10 @@ public class ContactMessageController {
         <body>
           <div class="container">
             <div class="logo">
-              <img src="https://jardindelasmarias.com/assets/logo-img-CyEqdf2n.png" alt="Hotel Jardines de las Marías" />
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s" alt="Hotel Jardines de las Marías" />
             </div>
 
-            <h2>📋 Nueva solicitud de cotización</h2>
+            <h2>Nueva solicitud de cotización</h2>
 
             <div class="section-title">Datos del cliente:</div>
             <div class="info">
