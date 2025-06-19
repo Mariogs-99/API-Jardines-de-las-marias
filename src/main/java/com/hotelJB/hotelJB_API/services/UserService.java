@@ -5,6 +5,7 @@ import com.hotelJB.hotelJB_API.models.dtos.SingupDTO;
 import com.hotelJB.hotelJB_API.models.dtos.UserDTO;
 import com.hotelJB.hotelJB_API.models.entities.Token;
 import com.hotelJB.hotelJB_API.models.entities.User_;
+import com.hotelJB.hotelJB_API.models.responses.LoginResponse;
 import com.hotelJB.hotelJB_API.models.responses.UserResponse;
 
 import java.util.List;
@@ -33,4 +34,5 @@ public interface UserService {
     void updateUser(int id, UserDTO dto) throws Exception;
     void deleteUser(int id) throws Exception;
 
+    LoginResponse loginWithToken(LoginDTO data) throws Exception;
 }

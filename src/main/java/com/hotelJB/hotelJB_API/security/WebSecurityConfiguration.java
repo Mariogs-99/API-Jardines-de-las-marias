@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,6 +27,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 @EnableWebMvc
+@EnableMethodSecurity(prePostEnabled = true) // Habilita @PreAuthorize
 public class WebSecurityConfiguration implements WebMvcConfigurer {
 
     @Autowired
@@ -39,8 +41,7 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
 
     @Bean
     AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder managerBuilder
-                = http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder managerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 
         managerBuilder
                 .userDetailsService(identifier -> {
@@ -76,6 +77,7 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
         http.httpBasic(withDefaults()).csrf(csrf -> csrf.disable());
 
         http.cors(withDefaults()).authorizeHttpRequests(auth -> {
+            // Público
             auth.requestMatchers("/uploads/**").permitAll();
             auth.requestMatchers("/menu/**").permitAll();
             auth.requestMatchers("/api/auth/**").permitAll();
@@ -84,6 +86,10 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
             auth.requestMatchers(HttpMethod.POST, "/api/reservation/**").permitAll();
             auth.requestMatchers(HttpMethod.POST, "/api/contact-message/send").permitAll();
 
+            // Solo ADMIN puede acceder a la gestión de usuarios
+            auth.requestMatchers("/api/users/**").hasRole("ADMIN");
+
+            // Todo lo demás requiere autenticación
             auth.anyRequest().authenticated();
         });
 

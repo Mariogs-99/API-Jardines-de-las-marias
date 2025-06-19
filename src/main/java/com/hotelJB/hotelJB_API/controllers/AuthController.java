@@ -30,19 +30,14 @@ public class AuthController {
     private RequestErrorHandler errorHandler;
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO data, BindingResult validations) throws Exception {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO data, BindingResult validations) {
         if (validations.hasErrors()) {
             return new ResponseEntity<>(errorHandler.mapErrors(validations.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }
 
-        User_ user = userService.findByUsername(data.getUsername());
-        if (user == null)
-            return new ResponseEntity<>(new MessageDTO("Usuario no encontrado"), HttpStatus.UNAUTHORIZED);
-
         try {
-            userService.login(data); // Aquí se valida también si está inactivo
-            Token token = userService.registerToken(user);
-            return new ResponseEntity<>(new TokenDTO(token), HttpStatus.OK);
+            var loginResponse = userService.loginWithToken(data);
+            return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (Exception e) {
             String msg = e.getMessage();
             if (msg.equals("Credenciales inválidas")) {
@@ -55,6 +50,7 @@ public class AuthController {
             }
         }
     }
+
 
 
     @PostMapping("/singup")

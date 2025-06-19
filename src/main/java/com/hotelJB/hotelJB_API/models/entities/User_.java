@@ -10,12 +10,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Entity
 @NoArgsConstructor
-@ToString(exclude = "tokens")
+@ToString(exclude = {"tokens", "role"})
 @Table(name = "user_")
 public class User_ implements UserDetails {
 
@@ -56,33 +57,38 @@ public class User_ implements UserDetails {
     @JsonIgnore
     private List<Token> tokens;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
+
     public User_(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
+    // Spring Security - Devuelve el rol como autoridad
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton((GrantedAuthority) role::getName);
+    }
+
     @Override
     public boolean isAccountNonExpired() {
-        return active != null && active;
+        return Boolean.TRUE.equals(active);
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return active != null && active;
+        return Boolean.TRUE.equals(active);
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return active != null && active;
+        return Boolean.TRUE.equals(active);
     }
 
     @Override
     public boolean isEnabled() {
-        return active != null && active;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(); // Se puede adaptar si agregas roles
+        return Boolean.TRUE.equals(active);
     }
 }

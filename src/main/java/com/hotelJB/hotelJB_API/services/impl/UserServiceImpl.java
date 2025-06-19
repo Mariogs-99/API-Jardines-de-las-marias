@@ -4,6 +4,7 @@
     import com.hotelJB.hotelJB_API.models.dtos.SingupDTO;
     import com.hotelJB.hotelJB_API.models.entities.Token;
     import com.hotelJB.hotelJB_API.models.entities.User_;
+    import com.hotelJB.hotelJB_API.models.responses.LoginResponse;
     import com.hotelJB.hotelJB_API.repositories.TokenRepository;
     import com.hotelJB.hotelJB_API.repositories.UserRepository;
     import com.hotelJB.hotelJB_API.security.JWTTools;
@@ -242,5 +243,28 @@
             }
             userRepository.deleteById(id);
         }
+
+        @Override
+        public LoginResponse loginWithToken(LoginDTO data) throws Exception {
+            User_ user = userRepository.findByUsername(data.getUsername());
+
+            if (user == null || !comparePass(data.getPassword(), user.getPassword())) {
+                throw new Exception("Credenciales inválidas");
+            }
+
+            if (user.getActive() == null || !user.getActive()) {
+                throw new Exception("Tu cuenta está inactiva. Contacta al administrador.");
+            }
+
+            // 🔐 Generar y registrar token
+            Token token = registerToken(user);
+
+            // 🎭 Obtener nombre del rol como lista de un solo string
+            String role = user.getRole() != null ? user.getRole().getName() : null;
+
+            return new LoginResponse(token.getToken(), role);
+        }
+
+
 
     }
