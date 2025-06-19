@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,32 +29,33 @@ public class AuthController {
     @Autowired
     private RequestErrorHandler errorHandler;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO data, BindingResult validations) throws Exception{
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO data, BindingResult validations) throws Exception {
         if (validations.hasErrors()) {
             return new ResponseEntity<>(errorHandler.mapErrors(validations.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }
 
         User_ user = userService.findByUsername(data.getUsername());
         if (user == null)
-            return new ResponseEntity<>(new MessageDTO("User not found"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new MessageDTO("Usuario no encontrado"), HttpStatus.UNAUTHORIZED);
 
         try {
-            userService.login(data);
+            userService.login(data); // Aquí se valida también si está inactivo
             Token token = userService.registerToken(user);
             return new ResponseEntity<>(new TokenDTO(token), HttpStatus.OK);
-
         } catch (Exception e) {
-            if (e.getMessage().equals("Invalid credentials")) {
-                return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.UNAUTHORIZED);
-            } else if (e.getMessage().equals("User inactive")) {
-                return new ResponseEntity<>(new MessageDTO(e.getMessage()), HttpStatus.CONFLICT);
+            String msg = e.getMessage();
+            if (msg.equals("Credenciales inválidas")) {
+                return new ResponseEntity<>(new MessageDTO(msg), HttpStatus.UNAUTHORIZED);
+            } else if (msg.equals("Tu cuenta está inactiva. Contacta al administrador.")) {
+                return new ResponseEntity<>(new MessageDTO(msg), HttpStatus.CONFLICT);
             } else {
                 e.printStackTrace();
-                return new ResponseEntity<>(new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new MessageDTO("Error interno del servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
     }
+
 
     @PostMapping("/singup")
     public ResponseEntity<?> singup(@RequestBody @Valid SingupDTO user, BindingResult validations) {

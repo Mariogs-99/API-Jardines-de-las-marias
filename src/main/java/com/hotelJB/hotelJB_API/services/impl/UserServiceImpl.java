@@ -48,14 +48,26 @@
             }
         }
 
+        //*Metodo implementado para validad si el usuario existe en la base de datos
         @Override
         public void login(LoginDTO data) throws Exception {
             User_ user = userRepository.findByUsername(data.getUsername());
 
+            if (user == null) {
+                throw new Exception("Credenciales inválidas");
+            }
+
+            //!Validar si el usuario está inactivo
+            if (user.getActive() == null || !user.getActive()) {
+                throw new Exception("Tu cuenta está inactiva. Contacta al administrador.");
+            }
+
+            //?Validar contraseña
             if (!comparePass(data.getPassword(), user.getPassword())) {
-                throw new Exception("Invalid credentials");
+                throw new Exception("Credenciales inválidas");
             }
         }
+
 
         @Override
         public User_ findByUsername(String username) {
