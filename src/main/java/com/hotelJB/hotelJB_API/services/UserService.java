@@ -2,8 +2,10 @@ package com.hotelJB.hotelJB_API.services;
 
 import com.hotelJB.hotelJB_API.models.dtos.LoginDTO;
 import com.hotelJB.hotelJB_API.models.dtos.SingupDTO;
+import com.hotelJB.hotelJB_API.models.dtos.UserDTO;
 import com.hotelJB.hotelJB_API.models.entities.Token;
 import com.hotelJB.hotelJB_API.models.entities.User_;
+import com.hotelJB.hotelJB_API.models.responses.UserResponse;
 
 import java.util.List;
 
@@ -22,4 +24,13 @@ public interface UserService {
     Boolean comparePass(String toCompare, String current);
     void toggleToken(User_ user);
     User_ findUserAuthenticated();
+
+    //?Nuevos metodos para USER
+
+    List<UserResponse> getAllUsers();
+    UserResponse getUserById(int id) throws Exception;
+    void createUser(UserDTO dto) throws Exception;
+    void updateUser(int id, UserDTO dto) throws Exception;
+    void deleteUser(int id) throws Exception;
+
 }
