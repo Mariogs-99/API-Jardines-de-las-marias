@@ -11,4 +11,7 @@ public class UserDTO {
     private String email;
     private String phone;
     private Boolean active;
+
+    // Nuevo campo para enviar el rol
+    private String role;
 }

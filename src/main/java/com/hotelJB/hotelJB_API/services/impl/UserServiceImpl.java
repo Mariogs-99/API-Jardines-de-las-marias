@@ -2,9 +2,11 @@
 
     import com.hotelJB.hotelJB_API.models.dtos.LoginDTO;
     import com.hotelJB.hotelJB_API.models.dtos.SingupDTO;
+    import com.hotelJB.hotelJB_API.models.entities.Role;
     import com.hotelJB.hotelJB_API.models.entities.Token;
     import com.hotelJB.hotelJB_API.models.entities.User_;
     import com.hotelJB.hotelJB_API.models.responses.LoginResponse;
+    import com.hotelJB.hotelJB_API.repositories.RoleRepository;
     import com.hotelJB.hotelJB_API.repositories.TokenRepository;
     import com.hotelJB.hotelJB_API.repositories.UserRepository;
     import com.hotelJB.hotelJB_API.security.JWTTools;
@@ -35,6 +37,10 @@
 
         @Autowired
         private TokenRepository tokenRepository;
+
+        @Autowired
+        private RoleRepository roleRepository;
+
 
         @Override
         @Transactional(rollbackOn = Exception.class)
@@ -170,9 +176,11 @@
                 res.setEmail(user.getEmail());
                 res.setPhone(user.getPhone());
                 res.setActive(user.getActive());
+                res.setRole(user.getRole() != null ? user.getRole().getName() : null); // Asignar rol aquí
                 return res;
             }).collect(Collectors.toList());
         }
+
 
         @Override
         public UserResponse getUserById(int id) throws Exception {
@@ -186,8 +194,10 @@
             res.setEmail(user.getEmail());
             res.setPhone(user.getPhone());
             res.setActive(user.getActive());
+            res.setRole(user.getRole() != null ? user.getRole().getName() : null);
             return res;
         }
+
 
         @Override
         @Transactional
@@ -204,8 +214,21 @@
             user.setEmail(dto.getEmail());
             user.setPhone(dto.getPhone());
             user.setActive(dto.getActive() != null ? dto.getActive() : true);
+
+            if (dto.getRole() != null) {
+                Role role = roleRepository.findByName(dto.getRole())
+                        .orElseThrow(() -> new Exception("Rol no encontrado"));
+                user.setRole(role);
+            } else {
+                // Opcional: asignar un rol por defecto
+                Role defaultRole = roleRepository.findByName("USER")
+                        .orElseThrow(() -> new Exception("Rol USER no encontrado"));
+                user.setRole(defaultRole);
+            }
+
             userRepository.save(user);
         }
+
 
         @Override
         @Transactional
@@ -213,13 +236,12 @@
             User_ user = userRepository.findById(id)
                     .orElseThrow(() -> new Exception("Usuario no encontrado"));
 
-            // 🛡️ Verificar si el nuevo username ya está en uso por otro usuario
+            // Verificar username
             User_ existing = userRepository.findByUsername(dto.getUsername());
             if (existing != null && existing.getUserId() != id) {
                 throw new Exception("El nombre de usuario ya está en uso");
             }
 
-            // ✅ Actualizar datos
             user.setUsername(dto.getUsername());
             user.setFirstname(dto.getFirstname());
             user.setLastname(dto.getLastname());
@@ -231,8 +253,15 @@
                 user.setPassword(passwordEncoder.encode(dto.getPassword()));
             }
 
+            if (dto.getRole() != null) {
+                Role role = roleRepository.findByName(dto.getRole())
+                        .orElseThrow(() -> new Exception("Rol no encontrado"));
+                user.setRole(role);
+            }
+
             userRepository.save(user);
         }
+
 
 
         @Override
