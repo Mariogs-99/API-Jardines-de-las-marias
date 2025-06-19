@@ -14,6 +14,7 @@ import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
 import com.hotelJB.hotelJB_API.utils.RequestErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -34,6 +35,9 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
 
     @Autowired
     private ImgRepository imgRepository;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     @Override
     public void save(CategoryRoomDTO data) throws Exception {
@@ -152,7 +156,7 @@ public class CategoryRoomServiceImpl implements CategoryRoomService {
 
                 Img img = room.getImg();
                 if (img != null) {
-                    dto.setImageUrl("http://localhost:8080/" + img.getPath());
+                    dto.setImageUrl(baseUrl + img.getPath());
                 } else {
                     dto.setImageUrl("/img/default.jpg");
                 }
