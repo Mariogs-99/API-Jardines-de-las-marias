@@ -24,7 +24,7 @@ public class AvailabilitySchedulerService {
     }
 
     // ⏰ Ejecuta todos los días a las 00:00
-  // @Scheduled(cron = "0 0 0 * * *") // Hora del servidor
+    @Scheduled(cron = "0 0 0 * * *") // Se ejecuta todos los días a la medianoche
     @Transactional
     public void updateRoomAvailability() {
         log.info("📆 Iniciando actualización de disponibilidad de habitaciones...");
@@ -34,10 +34,13 @@ public class AvailabilitySchedulerService {
 
         for (Room room : rooms) {
             int totalQuantity = room.getQuantity() != null ? room.getQuantity() : 0;
-            int reserved = reservationRepository.countReservedQuantityByRoomAndDates(room, today, today);
+
+            //!Usamos yesterday para no liberar habitaciones el mismo día del check-out
+            LocalDate yesterday = today.minusDays(1);
+            int reserved = reservationRepository.countReservedQuantityByRoomAndDates(room, yesterday, yesterday);
 
             int available = totalQuantity - reserved;
-            room.setAvailableQuantity(Math.max(available, 0)); // Siempre evita negativos
+            room.setAvailableQuantity(Math.max(available, 0));
 
             log.info("🛏️ Room ID {}: {} total, {} reservadas, {} disponibles",
                     room.getRoomId(), totalQuantity, reserved, room.getAvailableQuantity());
@@ -46,4 +49,5 @@ public class AvailabilitySchedulerService {
         roomRepository.saveAll(rooms);
         log.info("✅ Disponibilidad de habitaciones actualizada correctamente.");
     }
+
 }

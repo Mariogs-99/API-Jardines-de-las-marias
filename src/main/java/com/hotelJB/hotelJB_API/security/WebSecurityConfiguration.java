@@ -57,14 +57,14 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String uploadPath = System.getProperty("user.dir") + "/uploads/";
+        // Siempre usar el path del contenedor que definiste en Docker
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadPath);
+                .addResourceLocations("file:/app/uploads/");
 
-        String menuPath = System.getProperty("user.dir") + "/menu/";
         registry.addResourceHandler("/menu/**")
-                .addResourceLocations("file:" + menuPath);
+                .addResourceLocations("file:/app/menu/");
     }
+
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

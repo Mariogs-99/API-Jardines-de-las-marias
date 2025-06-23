@@ -1,14 +1,22 @@
-# Usar una imagen base de Java 17
-FROM openjdk:17-jdk-slim
-
-# Configurar el directorio de trabajo dentro del contenedor
+# Etapa 1: Build con Gradle Wrapper y Java 21
+FROM gradle:8.5-jdk21 AS build
 WORKDIR /app
 
-# Copiar el archivo .jar generado al contenedor
-COPY build/libs/hotelJB-API-0.0.1-SNAPSHOT.jar app.jar
+# Copiamos todos los archivos del proyecto
+COPY . .
 
-# Exponer el puerto que usa tu aplicación (por defecto, 8080)
+# Aseguramos que el wrapper tiene permisos de ejecución
+RUN chmod +x ./gradlew
+
+# Compilamos el proyecto, omitiendo tests para producción más rápida
+RUN ./gradlew build -x test
+
+# Etapa 2: Imagen final con JDK 21 para ejecutar la app
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+
+# Copiamos el .jar generado desde la etapa de build
+COPY --from=build /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
-
-# Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
