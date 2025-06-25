@@ -97,6 +97,8 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
             auth.requestMatchers(HttpMethod.POST, "/api/reservation/**").permitAll();
             auth.requestMatchers(HttpMethod.POST, "/api/contact-message/send").permitAll();
             auth.requestMatchers("/api/paypal/**").permitAll();
+            auth.requestMatchers("/ws-reservations/**").permitAll();
+
 
             // Solo ADMIN puede acceder a la gestión de usuarios
             auth.requestMatchers("/api/users/**").hasRole("ADMIN");

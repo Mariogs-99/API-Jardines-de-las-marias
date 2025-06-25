@@ -16,7 +16,7 @@ import java.util.List;
 
 public class GmailAuth {
     private static final String CREDENTIALS_FILE_PATH =
-            "uploads/client_secret_388838003606-48gu6litvk6nfdrhhskv7001flad62c7.apps.googleusercontent.com.json";
+            "gmail/client_secret_388838003606-48gu6litvk6nfdrhhskv7001flad62c7.apps.googleusercontent.com.json";
 
     private static final List<String> SCOPES = List.of("https://mail.google.com/");
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();

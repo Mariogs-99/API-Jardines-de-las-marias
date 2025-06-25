@@ -17,6 +17,7 @@ import com.hotelJB.hotelJB_API.services.ReservationRoomService;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
+import com.hotelJB.hotelJB_API.websocket.WebSocketNotificationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private GmailApiSenderService gmailApiSenderService;
+
+    @Autowired
+    private WebSocketNotificationService webSocketNotificationService;
 
 
 
@@ -78,6 +82,11 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         reservationRepository.save(reservation);
+
+        //! WebSocket notificacion en tiempo real
+
+        webSocketNotificationService.notifyNewReservation(reservation);
+
         reservationRoomService.saveRoomsForReservation(reservation.getReservationId(), data.getRooms());
 
         List<ReservationRoomResponse> roomResponses = data.getRooms().stream().map(roomDTO -> {
