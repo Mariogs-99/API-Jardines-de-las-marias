@@ -18,4 +18,6 @@ public class ReservationDTO {
     private String status; //  ACTIVA, FUTURA o FINALIZADA
 
     private List<ReservationRoomDTO> rooms;
+
+    private String paypalOrderId;
 }

@@ -118,7 +118,7 @@ public class ContactMessageController {
         );
 
         gmailApiSenderService.sendMail(
-                "meev2399@gmail.com",
+                "escobar.mario@globalsolutionslt.com",
                 "📋 Nueva cotización recibida - Jardines de las Marías",
                 html
         );

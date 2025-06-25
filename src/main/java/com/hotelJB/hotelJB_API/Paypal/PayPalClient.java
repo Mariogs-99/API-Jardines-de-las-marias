@@ -74,4 +74,47 @@ public class PayPalClient {
             return response.body().string();
         }
     }
+
+    public String captureOrder(String orderId) throws IOException {
+        String accessToken = getAccessToken();
+        String baseUrl = EnvConfig.getPaypalApiBase();
+
+        Request request = new Request.Builder()
+                .url(baseUrl + "/v2/checkout/orders/" + orderId + "/capture")
+                .post(RequestBody.create("", MediaType.get("application/json")))
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "application/json")
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Error al capturar orden: " + response.code() + " -> " + response.message());
+            }
+
+            return response.body().string(); // Puedes retornar el body o extraer el ID de transacción si lo necesitas
+        }
+    }
+
+    public JsonNode getOrderDetails(String orderId) throws IOException {
+        String accessToken = getAccessToken();
+        String baseUrl = EnvConfig.getPaypalApiBase();
+
+        Request request = new Request.Builder()
+                .url(baseUrl + "/v2/checkout/orders/" + orderId)
+                .get()
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "application/json")
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Error obteniendo detalles de la orden: " + response.code() + " -> " + response.message());
+            }
+
+            String responseBody = response.body().string();
+            return mapper.readTree(responseBody); // convierte el body en JsonNode
+        }
+    }
+
+
 }

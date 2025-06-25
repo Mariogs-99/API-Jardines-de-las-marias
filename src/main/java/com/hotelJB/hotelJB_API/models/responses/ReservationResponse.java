@@ -12,7 +12,6 @@ import java.util.List;
 public class ReservationResponse {
     private int reservationId;
     private String reservationCode;
-
     private LocalDate initDate;
     private LocalDate finishDate;
     private int cantPeople;
@@ -23,7 +22,8 @@ public class ReservationResponse {
     private int quantityReserved;
     private LocalDateTime creationDate;
     private String status;
-
     private List<ReservationRoomResponse> rooms;
     private String roomNumber;
+    private String dteControlNumber;
 }
+

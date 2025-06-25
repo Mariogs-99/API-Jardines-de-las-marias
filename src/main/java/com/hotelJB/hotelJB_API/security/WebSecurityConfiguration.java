@@ -55,15 +55,26 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
         return managerBuilder.build();
     }
 
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        // Siempre usar el path del contenedor que definiste en Docker
+//        registry.addResourceHandler("/uploads/**")
+//                .addResourceLocations("file:/app/uploads/");
+//
+//        registry.addResourceHandler("/menu/**")
+//                .addResourceLocations("file:/app/menu/");
+//    }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Siempre usar el path del contenedor que definiste en Docker
+        // Para desarrollo local (ajusta la ruta si es necesario)
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:/app/uploads/");
+                .addResourceLocations("file:./uploads/");
 
         registry.addResourceHandler("/menu/**")
-                .addResourceLocations("file:/app/menu/");
+                .addResourceLocations("file:./menu/");
     }
+
 
 
     @Override
@@ -85,6 +96,7 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
             auth.requestMatchers(HttpMethod.GET, "/api/**").permitAll();
             auth.requestMatchers(HttpMethod.POST, "/api/reservation/**").permitAll();
             auth.requestMatchers(HttpMethod.POST, "/api/contact-message/send").permitAll();
+            auth.requestMatchers("/api/paypal/**").permitAll();
 
             // Solo ADMIN puede acceder a la gestión de usuarios
             auth.requestMatchers("/api/users/**").hasRole("ADMIN");

@@ -1,5 +1,4 @@
 package com.hotelJB.hotelJB_API.services.impl;
-
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
 import com.hotelJB.hotelJB_API.models.dtos.ReservationRoomDTO;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
@@ -165,7 +164,7 @@ public class ReservationServiceImpl implements ReservationService {
             <body>
               <div class="container">
                 <div class="logo">
-                  <img src="https://jardindelasmarias.com/assets/logo-img-CyEqdf2n.png" alt="Hotel Jardines de las Marías" />
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s" alt="Hotel Jardines de las Marías" />
                 </div>
             
                 <h2>¡Gracias por su reserva, %s!</h2>
@@ -204,7 +203,7 @@ public class ReservationServiceImpl implements ReservationService {
                 htmlBody
         );
 
-        // ✅ Devolver la respuesta
+        // Devolver la respuesta
         return new ReservationResponse(
                 reservation.getReservationId(),
                 reservation.getReservationCode(),
@@ -219,7 +218,8 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getCreationDate(),
                 reservation.getStatus(),
                 roomResponses,
-                reservation.getRoomNumber()
+                reservation.getRoomNumber(),
+                reservation.getDteControlNumber()
         );
     }
 
@@ -324,7 +324,8 @@ public class ReservationServiceImpl implements ReservationService {
                             res.getCreationDate(),
                             res.getStatus(),
                             roomResponses,
-                            res.getRoomNumber()
+                            res.getRoomNumber(),
+                            res.getDteControlNumber()
                     );
                 }).collect(Collectors.toList());
     }
@@ -433,7 +434,8 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getCreationDate(),
                 reservation.getStatus(),
                 roomResponses,
-                reservation.getRoomNumber()
+                reservation.getRoomNumber(),
+                reservation.getDteControlNumber()
         );
     }
 

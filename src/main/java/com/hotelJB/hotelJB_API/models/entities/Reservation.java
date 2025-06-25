@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Data
@@ -57,6 +56,10 @@ public class Reservation {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "creation_date", updatable = false)
     private LocalDateTime creationDate;
+
+    // ✅ Nuevo campo para el número de control del DTE
+    @Column(name = "dte_control_number")
+    private String dteControlNumber;
 
     @PrePersist
     public void prePersist() {
