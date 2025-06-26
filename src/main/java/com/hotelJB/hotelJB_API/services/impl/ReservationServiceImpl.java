@@ -11,8 +11,7 @@ import com.hotelJB.hotelJB_API.models.responses.RoomResponse;
 import com.hotelJB.hotelJB_API.repositories.ReservationRepository;
 import com.hotelJB.hotelJB_API.repositories.ReservationRoomRepository;
 import com.hotelJB.hotelJB_API.repositories.RoomRepository;
-import com.hotelJB.hotelJB_API.services.GmailApiSenderService;
-import com.hotelJB.hotelJB_API.services.GmailSenderService;
+import com.hotelJB.hotelJB_API.services.EmailSenderService;
 import com.hotelJB.hotelJB_API.services.ReservationRoomService;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
@@ -42,10 +41,11 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationRoomService reservationRoomService;
 
     @Autowired
-    private GmailSenderService gmailSenderService;
+    private EmailSenderService gmailSenderService;
 
     @Autowired
-    private GmailApiSenderService gmailApiSenderService;
+    private EmailSenderService emailSenderService;
+
 
     @Autowired
     private WebSocketNotificationService webSocketNotificationService;
@@ -100,117 +100,175 @@ public class ReservationServiceImpl implements ReservationService {
             return resp;
         }).collect(Collectors.toList());
 
-        // ✉️ Generar HTML del correo
+        //? Generar HTML del correo
         String htmlBody = String.format("""
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-              <meta charset="UTF-8">
-              <style>
-                body {
-                  font-family: 'Segoe UI', sans-serif;
-                  background-color: #f6f6f6;
-                  padding: 30px;
-                  color: #333;
-                }
-                .container {
-                  background-color: #ffffff;
-                  padding: 30px;
-                  border-radius: 10px;
-                  max-width: 700px;
-                  margin: auto;
-                  box-shadow: 0 0 12px rgba(0,0,0,0.05);
-                }
-                .logo {
-                  text-align: center;
-                  margin-bottom: 25px;
-                }
-                .logo img {
-                  height: 90px;
-                }
-                h2 {
-                  color: #4A8B2C;
-                  font-size: 1.6rem;
-                  margin-bottom: 20px;
-                  text-align: center;
-                }
-                .section-title {
-                  font-weight: 600;
-                  font-size: 1rem;
-                  color: #6A4A3C;
-                  margin-top: 25px;
-                  margin-bottom: 10px;
-                }
-                .info {
-                  background-color: #fefefe;
-                  border: 1px solid #eee;
-                  padding: 15px 20px;
-                  border-radius: 8px;
-                  font-size: 0.95rem;
-                }
-                .info p {
-                  margin: 8px 0;
-                }
-                .highlight {
-                  color: #4A8B2C;
-                  font-weight: 600;
-                }
-                .code {
-                  font-size: 1.3rem;
-                  font-weight: bold;
-                  color: #006d77;
-                  text-align: center;
-                  margin-top: 20px;
-                }
-                .footer {
-                  margin-top: 30px;
-                  font-size: 0.85rem;
-                  color: #777;
-                  text-align: center;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <div class="logo">
-                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s" alt="Hotel Jardines de las Marías" />
-                </div>
-            
-                <h2>¡Gracias por su reserva, %s!</h2>
-            
-                <div class="section-title">Resumen de la reserva</div>
-                <div class="info">
-                  <p><span class="highlight">Fecha de entrada:</span> %s</p>
-                  <p><span class="highlight">Fecha de salida:</span> %s</p>
-                  <p><span class="highlight">Cantidad de personas:</span> %d</p>
-                  <p><span class="highlight">Cantidad de habitaciones:</span> %d</p>
-                </div>
-            
-                <div class="code">Código de Reserva: %s</div>
-            
-                <div class="footer">
-                  Hotel Jardines de las Marías<br/>
-                  Este es un mensaje automático. Si necesita asistencia, contáctenos.
-                </div>
-              </div>
-            </body>
-            </html>
-            """,
-                            reservation.getName(),
-                            reservation.getInitDate(),
-                            reservation.getFinishDate(),
-                            reservation.getCantPeople(),
-                            reservation.getQuantityReserved(),
-                            reservation.getReservationCode()
-                    );
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background-color: #f3f3f3;
+      padding: 30px 15px;
+      color: #333;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .logo img {
+      height: 70px;
+    }
+
+    h2 {
+      color: #2E7D32;
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      color: #4E342E;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .info-box {
+      background-color: #FAFAFA;
+      border: 1px solid #E0E0E0;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .info-box p {
+      margin: 10px 0;
+    }
+
+    .highlight {
+      color: #2E7D32;
+      font-weight: 600;
+    }
+
+    .reservation-code {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #1B5E20;
+      font-weight: bold;
+      margin-top: 30px;
+    }
+
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #777;
+    }
+
+    .contact-box {
+      margin-top: 40px;
+      font-size: 0.95rem;
+      text-align: center;
+      border-top: 1px solid #ddd;
+      padding-top: 30px;
+      color: #444;
+    }
+
+    .contact-box p {
+      margin: 6px 0;
+    }
+
+    .contact-logo {
+      font-size: 1.4rem;
+      color: #2E7D32;
+      font-weight: bold;
+    }
+
+    .icon {
+      margin-right: 6px;
+    }
+
+    .social-icons {
+      margin-top: 10px;
+    }
+
+    .social-icons a {
+      margin: 0 6px;
+      text-decoration: none;
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s" alt="Hotel Jardines de las Marías" />
+    </div>
+
+    <h2>¡Gracias por su reserva, %s!</h2>
+
+    <div class="section-title">Resumen de la reserva</div>
+    <div class="info-box">
+      <p><span class="highlight">Fecha de entrada:</span> %s</p>
+      <p><span class="highlight">Fecha de salida:</span> %s</p>
+      <p><span class="highlight">Cantidad de personas:</span> %d</p>
+      <p><span class="highlight">Cantidad de habitaciones:</span> %d</p>
+    </div>
+
+    <div class="reservation-code">Código de Reserva: %s</div>
+
+    <div class="footer">
+      Este es un mensaje automático. Si necesita asistencia, puede contactarnos:
+    </div>
+
+    <div class="contact-box">
+      <div class="contact-logo">Hotel Jardines de las Marías</div>
+      <p>📞 2562-8891</p>
+      <p>📱 7890-5449</p>
+      <p>✉️ jardindelasmariashotel@gmail.com</p>
+      <p>📍 2 Avenida sur #23, Barrio el Calvario, Suchitoto</p>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/hoteljardindelasmarias" target="_blank">Facebook</a> |
+        <a href="https://www.instagram.com/hoteljardindelasmarias/" target="_blank">Instagram</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+""",
+                reservation.getName(),
+                reservation.getInitDate(),
+                reservation.getFinishDate(),
+                reservation.getCantPeople(),
+                reservation.getQuantityReserved(),
+                reservation.getReservationCode()
+        );
 
 
-        // ✉️ Enviar correo
-        gmailApiSenderService.sendMail(
+
+
+        //?Enviar correo
+        emailSenderService.sendMail(
                 reservation.getEmail(),
                 "Confirmación de Reserva - Hotel Jardines de las Marías",
                 htmlBody
         );
+
 
         // Devolver la respuesta
         return new ReservationResponse(

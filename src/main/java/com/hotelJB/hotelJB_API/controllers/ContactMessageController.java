@@ -1,7 +1,7 @@
 package com.hotelJB.hotelJB_API.controllers;
 
 import com.hotelJB.hotelJB_API.models.dtos.ContactMessageDTO;
-import com.hotelJB.hotelJB_API.services.GmailApiSenderService;
+import com.hotelJB.hotelJB_API.services.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class ContactMessageController {
 
     @Autowired
-    private GmailApiSenderService gmailApiSenderService;
+    private EmailSenderService emailSenderService;
 
     @PostMapping("/send")
     public void sendContactMessage(@RequestBody ContactMessageDTO data) {
@@ -117,9 +117,9 @@ public class ContactMessageController {
                 data.getMessage() != null ? data.getMessage() : "(sin mensaje)"
         );
 
-        gmailApiSenderService.sendMail(
-                "escobar.mario@globalsolutionslt.com",
-                "📋 Nueva cotización recibida - Jardines de las Marías",
+        emailSenderService.sendMail(
+                "pruebajardin@jardindelasmarias.com",
+                "Nueva cotización recibida - Jardines de las Marías",
                 html
         );
     }
