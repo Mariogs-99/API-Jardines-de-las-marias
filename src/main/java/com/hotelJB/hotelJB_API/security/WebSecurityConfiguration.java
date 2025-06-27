@@ -17,17 +17,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 @EnableWebMvc
-@EnableMethodSecurity(prePostEnabled = true) // Habilita @PreAuthorize
+@EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration implements WebMvcConfigurer {
 
     @Autowired
@@ -55,16 +60,6 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
         return managerBuilder.build();
     }
 
-//    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        // Siempre usar el path del contenedor que definiste en Docker
-//        registry.addResourceHandler("/uploads/**")
-//                .addResourceLocations("file:/app/uploads/");
-//
-//        registry.addResourceHandler("/menu/**")
-//                .addResourceLocations("file:/app/menu/");
-//    }
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Para desarrollo local (ajusta la ruta si es necesario)
@@ -75,19 +70,33 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
                 .addResourceLocations("file:./menu/");
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "https://jardindelasmarias.com",
+                "https://admin.jardindelasmarias.com"
+        ));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
 
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
+
+
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.httpBasic(withDefaults()).csrf(csrf -> csrf.disable());
 
         http.cors(withDefaults()).authorizeHttpRequests(auth -> {
+            auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll(); // ← LÍNEA CLAVE PARA CORS!
+
             // Público
             auth.requestMatchers("/uploads/**").permitAll();
             auth.requestMatchers("/menu/**").permitAll();
@@ -98,7 +107,6 @@ public class WebSecurityConfiguration implements WebMvcConfigurer {
             auth.requestMatchers(HttpMethod.POST, "/api/contact-message/send").permitAll();
             auth.requestMatchers("/api/paypal/**").permitAll();
             auth.requestMatchers("/ws-reservations/**").permitAll();
-
 
             // Solo ADMIN puede acceder a la gestión de usuarios
             auth.requestMatchers("/api/users/**").hasRole("ADMIN");
