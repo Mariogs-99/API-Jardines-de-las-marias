@@ -15,12 +15,15 @@ public class WompiWebhookController {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    private static final String RESULT_SUCCESS = "ExitosaAprobada";
+    private static final String RESULT_REJECTED = "Rechazada";
+    private static final String RESULT_CANCELLED = "Anulada";
+
     @PostMapping
     public ResponseEntity<String> handleWompiWebhook(@RequestBody Map<String, Object> payload) {
         System.out.println("✅ Webhook recibido de Wompi: " + payload);
 
         try {
-            // Extraer el objeto EnlacePago
             Map<String, Object> enlacePago = (Map<String, Object>) payload.get("EnlacePago");
 
             String reference = null;
@@ -34,22 +37,27 @@ public class WompiWebhookController {
             System.out.println("Resultado transacción: " + resultado);
 
             if (reference != null && resultado != null && reference.startsWith("Reserva-")) {
-                // Ej. Reserva-12345 → obtenemos el ID
-                Integer reservationId = Integer.parseInt(reference.replace("Reserva-", ""));
+                Integer reservationId;
+                try {
+                    reservationId = Integer.parseInt(reference.replace("Reserva-", ""));
+                } catch (NumberFormatException e) {
+                    System.out.println("❌ Identificador inválido en referencia: " + reference);
+                    return ResponseEntity.ok("ok");
+                }
 
                 Reservation reservation = reservationRepository.findById(reservationId)
                         .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
 
                 switch (resultado) {
-                    case "ExitosaAprobada" -> {
+                    case RESULT_SUCCESS -> {
                         reservation.setStatus("PAGADA");
                         System.out.println("✅ Reserva marcada como PAGADA: " + reservationId);
                     }
-                    case "Rechazada" -> {
+                    case RESULT_REJECTED -> {
                         reservation.setStatus("FALLIDA");
                         System.out.println("❌ Reserva marcada como FALLIDA: " + reservationId);
                     }
-                    case "Anulada" -> {
+                    case RESULT_CANCELLED -> {
                         reservation.setStatus("ANULADA");
                         System.out.println("⚠️ Reserva ANULADA: " + reservationId);
                     }
@@ -59,13 +67,21 @@ public class WompiWebhookController {
                     }
                 }
 
+                // (Opcional) Guardar código de autorización
+                String codigoAutorizacion = (String) payload.get("CodigoAutorizacion");
+                if (codigoAutorizacion != null) {
+                    System.out.println("Código autorización: " + codigoAutorizacion);
+                    // Si tienes campo transactionCode en Reservation, guárdalo
+                    // reservation.setTransactionCode(codigoAutorizacion);
+                }
+
                 reservationRepository.save(reservation);
             }
 
         } catch (Exception e) {
             System.out.println("🚨 Error procesando el webhook: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.ok("ok"); // evitar reintentos infinitos
+            return ResponseEntity.ok("ok");
         }
 
         return ResponseEntity.ok("ok");

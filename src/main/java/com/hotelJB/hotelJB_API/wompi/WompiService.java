@@ -1,26 +1,42 @@
 package com.hotelJB.hotelJB_API.wompi;
 
-import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
+import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class WompiService {
 
+    @Value("${wompi.api.url}")
+    private String wompiApiUrl;
+
+    @Value("${wompi.api.app-id}")
+    private String wompiAppId;
+
+    @Value("${wompi.api.redirect-url}")
+    private String redirectUrl;
+
+    @Value("${wompi.api.webhook-url}")
+    private String webhookUrl;
+
+    @Value("${wompi.api.bearer-token:}") // opcional
+    private String bearerToken;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public String crearEnlacePago(ReservationResponse reservation) {
-        String url = "https://api.wompi.sv/EnlacePago";
-
+    public String crearEnlacePago(Reservation reservation) {
         Map<String, Object> payload = new HashMap<>();
-        payload.put("idAplicativo", "2a0a70a7-9842-4c3a-baee-267a8b2946b2");
+        payload.put("idAplicativo", wompiAppId);
         payload.put("identificadorEnlaceComercio", reservation.getReservationCode());
-        payload.put("monto", (int) (reservation.getPayment() * 100)); // en centavos
-        payload.put("nombreProducto", "Reserva habitación");
+        payload.put("monto", (int) (reservation.getPayment())); // ojo: aquí NO multiplicamos por 100 porque tus pruebas indicaban error por monto máximo en centavos.
+        payload.put("nombreProducto", "Reserva habitación Hotel Jardin de las Marias");
 
         Map<String, Object> formaPago = new HashMap<>();
         formaPago.put("permitirTarjetaCreditoDebido", true);
@@ -32,12 +48,15 @@ public class WompiService {
 
         Map<String, Object> infoProducto = new HashMap<>();
         infoProducto.put("descripcionProducto", "Reserva del " + reservation.getInitDate() + " al " + reservation.getFinishDate());
-        infoProducto.put("urlImagenProducto", "https://tuhotel.com/images/habitacion.jpg");
+        infoProducto.put("urlImagenProducto", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s");
         payload.put("infoProducto", infoProducto);
 
+        // ✅ Construir la URL de redirect con parámetro reservationCode
+        String redirectUrlWithParam = redirectUrl + "?reservationCode=" + reservation.getReservationCode();
+
         Map<String, Object> configuracion = new HashMap<>();
-        configuracion.put("urlRedirect", "https://tuhotel.com/pago-exitoso");
-        configuracion.put("urlWebhook", "https://hoteljardin.loca.lt/webhook-wompi");
+        configuracion.put("urlRedirect", redirectUrlWithParam);
+        configuracion.put("urlWebhook", webhookUrl);
         configuracion.put("esMontoEditable", false);
         configuracion.put("esCantidadEditable", false);
         configuracion.put("cantidadPorDefecto", 1);
@@ -46,8 +65,9 @@ public class WompiService {
         payload.put("configuracion", configuracion);
 
         Map<String, Object> vigencia = new HashMap<>();
-        vigencia.put("fechaInicio", reservation.getInitDate().atStartOfDay().toString());
-        vigencia.put("fechaFin", reservation.getFinishDate().atTime(23, 59).toString());
+        LocalDateTime now = LocalDateTime.now();
+        vigencia.put("fechaInicio", now.toString());
+        vigencia.put("fechaFin", now.plusDays(2).withHour(23).withMinute(59).withSecond(59).toString());
         payload.put("vigencia", vigencia);
 
         Map<String, Object> limites = new HashMap<>();
@@ -57,9 +77,13 @@ public class WompiService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+        if (bearerToken != null && !bearerToken.isEmpty()) {
+            headers.set("Authorization", "Bearer " + bearerToken);
+        }
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+        ResponseEntity<Map> response = restTemplate.postForEntity(wompiApiUrl, entity, Map.class);
         Map<String, Object> responseBody = response.getBody();
 
         if (responseBody != null && responseBody.containsKey("urlEnlace")) {

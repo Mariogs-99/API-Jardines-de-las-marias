@@ -25,5 +25,5 @@ public class ReservationResponse {
     private List<ReservationRoomResponse> rooms;
     private String roomNumber;
     private String dteControlNumber;
+    private String wompiCheckoutUrl;
 }
-

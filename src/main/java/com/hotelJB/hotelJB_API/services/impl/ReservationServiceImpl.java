@@ -17,6 +17,7 @@ import com.hotelJB.hotelJB_API.services.ReservationService;
 import com.hotelJB.hotelJB_API.utils.CustomException;
 import com.hotelJB.hotelJB_API.utils.ErrorType;
 import com.hotelJB.hotelJB_API.websocket.WebSocketNotificationService;
+import com.hotelJB.hotelJB_API.wompi.WompiService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private WebSocketNotificationService webSocketNotificationService;
 
+    @Autowired
+    private WompiService wompiService;
+
+
 
 
     @Override
@@ -81,18 +86,20 @@ public class ReservationServiceImpl implements ReservationService {
             reservation.setRoom(room);
         }
 
+        // Guardar reserva inicial para obtener el ID
         reservationRepository.save(reservation);
 
+        // Generar el reservationCode tipo "Reserva-123"
         String wompiReference = "Reserva-" + reservation.getReservationId();
         reservation.setReservationCode(wompiReference);
         reservationRepository.save(reservation);
 
         System.out.println("Referencia Wompi generada: " + wompiReference);
 
-        //! WebSocket notificacion en tiempo real
-
+        //! WebSocket notificación en tiempo real
         webSocketNotificationService.notifyNewReservation(reservation);
 
+        // Guardar habitaciones reservadas
         reservationRoomService.saveRoomsForReservation(reservation.getReservationId(), data.getRooms());
 
         List<ReservationRoomResponse> roomResponses = data.getRooms().stream().map(roomDTO -> {
@@ -119,7 +126,6 @@ public class ReservationServiceImpl implements ReservationService {
       padding: 30px 15px;
       color: #333;
     }
-
     .container {
       background-color: #ffffff;
       padding: 40px;
@@ -128,30 +134,25 @@ public class ReservationServiceImpl implements ReservationService {
       border-radius: 16px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
     }
-
     .logo {
       text-align: center;
       margin-bottom: 25px;
     }
-
     .logo img {
       height: 70px;
     }
-
     h2 {
       color: #2E7D32;
       font-size: 1.8rem;
       text-align: center;
       margin-bottom: 30px;
     }
-
     .section-title {
       font-size: 1.1rem;
       color: #4E342E;
       margin-bottom: 10px;
       font-weight: bold;
     }
-
     .info-box {
       background-color: #FAFAFA;
       border: 1px solid #E0E0E0;
@@ -160,16 +161,13 @@ public class ReservationServiceImpl implements ReservationService {
       font-size: 0.95rem;
       margin-bottom: 20px;
     }
-
     .info-box p {
       margin: 10px 0;
     }
-
     .highlight {
       color: #2E7D32;
       font-weight: 600;
     }
-
     .reservation-code {
       text-align: center;
       font-size: 1.2rem;
@@ -177,14 +175,12 @@ public class ReservationServiceImpl implements ReservationService {
       font-weight: bold;
       margin-top: 30px;
     }
-
     .footer {
       margin-top: 40px;
       text-align: center;
       font-size: 0.85rem;
       color: #777;
     }
-
     .contact-box {
       margin-top: 40px;
       font-size: 0.95rem;
@@ -193,25 +189,20 @@ public class ReservationServiceImpl implements ReservationService {
       padding-top: 30px;
       color: #444;
     }
-
     .contact-box p {
       margin: 6px 0;
     }
-
     .contact-logo {
       font-size: 1.4rem;
       color: #2E7D32;
       font-weight: bold;
     }
-
     .icon {
       margin-right: 6px;
     }
-
     .social-icons {
       margin-top: 10px;
     }
-
     .social-icons a {
       margin: 0 6px;
       text-decoration: none;
@@ -225,9 +216,7 @@ public class ReservationServiceImpl implements ReservationService {
     <div class="logo">
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s" alt="Hotel Jardines de las Marías" />
     </div>
-
     <h2>¡Gracias por su reserva, %s!</h2>
-
     <div class="section-title">Resumen de la reserva</div>
     <div class="info-box">
       <p><span class="highlight">Fecha de entrada:</span> %s</p>
@@ -235,13 +224,10 @@ public class ReservationServiceImpl implements ReservationService {
       <p><span class="highlight">Cantidad de personas:</span> %d</p>
       <p><span class="highlight">Cantidad de habitaciones:</span> %d</p>
     </div>
-
     <div class="reservation-code">Código de Reserva: %s</div>
-
     <div class="footer">
       Este es un mensaje automático. Si necesita asistencia, puede contactarnos:
     </div>
-
     <div class="contact-box">
       <div class="contact-logo">Hotel Jardines de las Marías</div>
       <p>📞 2562-8891</p>
@@ -265,18 +251,14 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getReservationCode()
         );
 
-
-
-
-        //?Enviar correo
+        // Enviar correo
         emailSenderService.sendMail(
                 reservation.getEmail(),
                 "Confirmación de Reserva - Hotel Jardines de las Marías",
                 htmlBody
         );
 
-
-        // Devolver la respuesta
+        // Devolver respuesta incluyendo el enlace de pago
         return new ReservationResponse(
                 reservation.getReservationId(),
                 reservation.getReservationCode(),
@@ -292,7 +274,9 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getStatus(),
                 roomResponses,
                 reservation.getRoomNumber(),
-                reservation.getDteControlNumber()
+                reservation.getDteControlNumber(),
+                null
+
         );
     }
 
@@ -398,7 +382,8 @@ public class ReservationServiceImpl implements ReservationService {
                             res.getStatus(),
                             roomResponses,
                             res.getRoomNumber(),
-                            res.getDteControlNumber()
+                            res.getDteControlNumber(),
+                            null
                     );
                 }).collect(Collectors.toList());
     }
@@ -508,7 +493,8 @@ public class ReservationServiceImpl implements ReservationService {
                 reservation.getStatus(),
                 roomResponses,
                 reservation.getRoomNumber(),
-                reservation.getDteControlNumber()
+                reservation.getDteControlNumber(),
+                null
         );
     }
 

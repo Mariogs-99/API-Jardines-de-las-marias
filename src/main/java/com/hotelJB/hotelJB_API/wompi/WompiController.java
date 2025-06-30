@@ -28,9 +28,15 @@ public class WompiController {
     @PostMapping("/wompi")
     public ResponseEntity<?> createReservationWithWompi(@RequestBody ReservationDTO reservationDTO) throws Exception {
 
+        // Guardar la reserva y obtener el response DTO
         ReservationResponse savedReservation = reservationService.save(reservationDTO);
 
-        String wompiUrl = wompiService.crearEnlacePago(savedReservation);
+        // Buscar la entidad Reservation en la BD
+        Reservation reservationEntity = reservationRepository.findById(savedReservation.getReservationId())
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        // Crear el enlace de pago en Wompi
+        String wompiUrl = wompiService.crearEnlacePago(reservationEntity);
 
         Map<String, Object> response = new HashMap<>();
         response.put("reservationId", savedReservation.getReservationId());
@@ -39,6 +45,4 @@ public class WompiController {
 
         return ResponseEntity.ok(response);
     }
-
-
 }
