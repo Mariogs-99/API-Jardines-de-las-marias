@@ -1,5 +1,6 @@
 package com.hotelJB.hotelJB_API.wompi;
 
+import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -39,12 +40,13 @@ public class WompiService {
         this.wompiTokenService = wompiTokenService;
     }
 
-    public String crearEnlacePago(Reservation reservation) {
+    public String crearEnlacePago(ReservationDTO dto, String tempReference) {
+
         Map<String, Object> payload = new HashMap<>();
         payload.put("idAplicativo", wompiAppId);
-        payload.put("identificadorEnlaceComercio", reservation.getReservationCode());
-        payload.put("monto", (int) (reservation.getPayment())); // ojo: aquí NO multiplicamos por 100 porque tus pruebas indicaban error por monto máximo en centavos.
-        payload.put("nombreProducto", "Reserva habitación Hotel Jardin de las Marias");
+        payload.put("identificadorEnlaceComercio", tempReference);
+        payload.put("monto", (int) (dto.getPayment()));
+        payload.put("nombreProducto", "Reserva habitación Hotel Jardín de las Marías");
 
         Map<String, Object> formaPago = new HashMap<>();
         formaPago.put("permitirTarjetaCreditoDebido", true);
@@ -55,12 +57,11 @@ public class WompiService {
         payload.put("formaPago", formaPago);
 
         Map<String, Object> infoProducto = new HashMap<>();
-        infoProducto.put("descripcionProducto", "Reserva del " + reservation.getInitDate() + " al " + reservation.getFinishDate());
+        infoProducto.put("descripcionProducto", "Reserva del " + dto.getInitDate() + " al " + dto.getFinishDate());
         infoProducto.put("urlImagenProducto", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s");
         payload.put("infoProducto", infoProducto);
 
-        // ✅ Construir la URL de redirect con parámetro reservationCode
-        String redirectUrlWithParam = redirectUrl + "?reservationCode=" + reservation.getReservationCode();
+        String redirectUrlWithParam = redirectUrl + "?tempReference=" + tempReference;
 
         Map<String, Object> configuracion = new HashMap<>();
         configuracion.put("urlRedirect", redirectUrlWithParam);
@@ -89,7 +90,6 @@ public class WompiService {
         String token = wompiTokenService.getAccessToken();
         headers.set("Authorization", "Bearer " + token);
 
-
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
         ResponseEntity<Map> response = restTemplate.postForEntity(wompiApiUrl, entity, Map.class);
         Map<String, Object> responseBody = response.getBody();
@@ -100,4 +100,5 @@ public class WompiService {
             return null;
         }
     }
+
 }

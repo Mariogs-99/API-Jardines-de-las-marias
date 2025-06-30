@@ -1,7 +1,8 @@
 package com.hotelJB.hotelJB_API.wompi;
 
-import com.hotelJB.hotelJB_API.models.entities.Reservation;
-import com.hotelJB.hotelJB_API.repositories.ReservationRepository;
+import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
+import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
+import com.hotelJB.hotelJB_API.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,10 @@ import java.util.Map;
 public class WompiWebhookController {
 
     @Autowired
-    private ReservationRepository reservationRepository;
+    private TempReservationService tempReservationService;
+
+    @Autowired
+    private ReservationService reservationService;
 
     private static final String RESULT_SUCCESS = "ExitosaAprobada";
     private static final String RESULT_REJECTED = "Rechazada";
@@ -36,46 +40,29 @@ public class WompiWebhookController {
             System.out.println("Referencia recibida: " + reference);
             System.out.println("Resultado transacción: " + resultado);
 
-            if (reference != null && resultado != null && reference.startsWith("Reserva-")) {
-                Integer reservationId;
-                try {
-                    reservationId = Integer.parseInt(reference.replace("Reserva-", ""));
-                } catch (NumberFormatException e) {
-                    System.out.println("❌ Identificador inválido en referencia: " + reference);
-                    return ResponseEntity.ok("ok");
+            if (reference != null && resultado != null && reference.startsWith("Temp-")) {
+
+                // 🔶 SOLO SI ES EXITOSA
+                if (RESULT_SUCCESS.equals(resultado)) {
+                    // Recuperar DTO temporal
+                    ReservationDTO dto = tempReservationService.getTempReservation(reference);
+
+                    if (dto != null) {
+                        // Guardar reserva real en BD
+                        ReservationResponse saved = reservationService.save(dto);
+
+                        System.out.println("✅ Reserva creada tras pago exitoso. ID: " + saved.getReservationId());
+
+                        // Eliminar DTO temporal
+                        tempReservationService.deleteTempReservation(reference);
+                    } else {
+                        System.out.println("❌ No se encontró pre-reserva para referencia: " + reference);
+                    }
+                } else {
+                    System.out.println("❌ Pago fallido o anulado. No se crea reserva.");
                 }
-
-                Reservation reservation = reservationRepository.findById(reservationId)
-                        .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-
-                switch (resultado) {
-                    case RESULT_SUCCESS -> {
-                        reservation.setStatus("PAGADA");
-                        System.out.println("✅ Reserva marcada como PAGADA: " + reservationId);
-                    }
-                    case RESULT_REJECTED -> {
-                        reservation.setStatus("FALLIDA");
-                        System.out.println("❌ Reserva marcada como FALLIDA: " + reservationId);
-                    }
-                    case RESULT_CANCELLED -> {
-                        reservation.setStatus("ANULADA");
-                        System.out.println("⚠️ Reserva ANULADA: " + reservationId);
-                    }
-                    default -> {
-                        reservation.setStatus("PENDIENTE");
-                        System.out.println("🤔 Estado desconocido. Reserva pendiente: " + reservationId);
-                    }
-                }
-
-                // (Opcional) Guardar código de autorización
-                String codigoAutorizacion = (String) payload.get("CodigoAutorizacion");
-                if (codigoAutorizacion != null) {
-                    System.out.println("Código autorización: " + codigoAutorizacion);
-                    // Si tienes campo transactionCode en Reservation, guárdalo
-                    // reservation.setTransactionCode(codigoAutorizacion);
-                }
-
-                reservationRepository.save(reservation);
+            } else {
+                System.out.println("❌ Referencia inválida o desconocida: " + reference);
             }
 
         } catch (Exception e) {

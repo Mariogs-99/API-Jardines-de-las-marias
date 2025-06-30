@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class ReservationDTO {
+    private String tempReference;
     private LocalDate initDate;
     private LocalDate finishDate;
     private int cantPeople;
