@@ -1,6 +1,7 @@
 package com.hotelJB.hotelJB_API.wompi;
 
 import com.hotelJB.hotelJB_API.models.entities.Reservation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +30,14 @@ public class WompiService {
     @Value("${wompi.api.bearer-token:}") // opcional
     private String bearerToken;
 
+    @Autowired
+    private final WompiTokenService wompiTokenService;
+
     private final RestTemplate restTemplate = new RestTemplate();
+
+    public WompiService(WompiTokenService wompiTokenService) {
+        this.wompiTokenService = wompiTokenService;
+    }
 
     public String crearEnlacePago(Reservation reservation) {
         Map<String, Object> payload = new HashMap<>();
@@ -78,9 +86,9 @@ public class WompiService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        if (bearerToken != null && !bearerToken.isEmpty()) {
-            headers.set("Authorization", "Bearer " + bearerToken);
-        }
+        String token = wompiTokenService.getAccessToken();
+        headers.set("Authorization", "Bearer " + token);
+
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
         ResponseEntity<Map> response = restTemplate.postForEntity(wompiApiUrl, entity, Map.class);
