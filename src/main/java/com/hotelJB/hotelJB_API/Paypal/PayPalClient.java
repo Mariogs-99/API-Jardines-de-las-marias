@@ -1,10 +1,8 @@
 package com.hotelJB.hotelJB_API.Paypal;
 
-import okhttp3.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hotelJB.hotelJB_API.config.EnvConfig; // 👈 Importá EnvConfig
-
+import okhttp3.*;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -15,19 +13,23 @@ public class PayPalClient {
 
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
+    private final PaypalProperties paypalProperties;
+
+    public PayPalClient(PaypalProperties paypalProperties) {
+        this.paypalProperties = paypalProperties;
+    }
 
     public String getAccessToken() throws IOException {
-        String clientId = EnvConfig.getPaypalClientId();
-        String clientSecret = EnvConfig.getPaypalSecret();
-        String baseUrl = EnvConfig.getPaypalApiBase();
+        String clientId = paypalProperties.getClient().getId();
+        String clientSecret = paypalProperties.getClient().getSecret();
+        String baseUrl = paypalProperties.getApi().getBase();
 
         String credential = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
 
-
-
         Request request = new Request.Builder()
                 .url(baseUrl + "/v1/oauth2/token")
-                .post(RequestBody.create("grant_type=client_credentials", MediaType.get("application/x-www-form-urlencoded")))
+                .post(RequestBody.create("grant_type=client_credentials",
+                        MediaType.get("application/x-www-form-urlencoded")))
                 .header("Authorization", "Basic " + credential)
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .build();
@@ -45,7 +47,7 @@ public class PayPalClient {
 
     public String createOrder(double total) throws IOException {
         String accessToken = getAccessToken();
-        String baseUrl = EnvConfig.getPaypalApiBase();
+        String baseUrl = paypalProperties.getApi().getBase();
 
         String jsonBody = "{\n" +
                 "  \"intent\": \"CAPTURE\",\n" +
@@ -77,7 +79,7 @@ public class PayPalClient {
 
     public String captureOrder(String orderId) throws IOException {
         String accessToken = getAccessToken();
-        String baseUrl = EnvConfig.getPaypalApiBase();
+        String baseUrl = paypalProperties.getApi().getBase();
 
         Request request = new Request.Builder()
                 .url(baseUrl + "/v2/checkout/orders/" + orderId + "/capture")
@@ -91,13 +93,13 @@ public class PayPalClient {
                 throw new IOException("Error al capturar orden: " + response.code() + " -> " + response.message());
             }
 
-            return response.body().string(); // Puedes retornar el body o extraer el ID de transacción si lo necesitas
+            return response.body().string();
         }
     }
 
     public JsonNode getOrderDetails(String orderId) throws IOException {
         String accessToken = getAccessToken();
-        String baseUrl = EnvConfig.getPaypalApiBase();
+        String baseUrl = paypalProperties.getApi().getBase();
 
         Request request = new Request.Builder()
                 .url(baseUrl + "/v2/checkout/orders/" + orderId)
@@ -112,9 +114,7 @@ public class PayPalClient {
             }
 
             String responseBody = response.body().string();
-            return mapper.readTree(responseBody); // convierte el body en JsonNode
+            return mapper.readTree(responseBody);
         }
     }
-
-
 }
