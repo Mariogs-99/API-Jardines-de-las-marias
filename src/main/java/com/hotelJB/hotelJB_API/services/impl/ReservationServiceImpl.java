@@ -83,6 +83,12 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservationRepository.save(reservation);
 
+        String wompiReference = "Reserva-" + reservation.getReservationId();
+        reservation.setReservationCode(wompiReference);
+        reservationRepository.save(reservation);
+
+        System.out.println("Referencia Wompi generada: " + wompiReference);
+
         //! WebSocket notificacion en tiempo real
 
         webSocketNotificationService.notifyNewReservation(reservation);
