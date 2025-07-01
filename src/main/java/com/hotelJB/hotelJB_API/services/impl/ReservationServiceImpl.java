@@ -252,11 +252,11 @@ public class ReservationServiceImpl implements ReservationService {
         );
 
         // Enviar correo
-        emailSenderService.sendMail(
-                reservation.getEmail(),
-                "Confirmación de Reserva - Hotel Jardines de las Marías",
-                htmlBody
-        );
+//        emailSenderService.sendMail(
+//                reservation.getEmail(),
+//                "Confirmación de Reserva - Hotel Jardines de las Marías",
+//                htmlBody
+//        );
 
         // Devolver respuesta incluyendo el enlace de pago
         return new ReservationResponse(
