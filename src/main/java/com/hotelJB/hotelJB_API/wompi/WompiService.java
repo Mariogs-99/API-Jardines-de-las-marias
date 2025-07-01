@@ -1,17 +1,14 @@
 package com.hotelJB.hotelJB_API.wompi;
 
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
-import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class WompiService {
@@ -73,14 +70,11 @@ public class WompiService {
         configuracion.put("notificarTransaccionCliente", true);
         payload.put("configuracion", configuracion);
 
-        Map<String, Object> vigencia = new HashMap<>();
-        LocalDateTime now = LocalDateTime.now();
-        vigencia.put("fechaInicio", now.toString());
-        vigencia.put("fechaFin", now.plusDays(2).withHour(23).withMinute(59).withSecond(59).toString());
-        payload.put("vigencia", vigencia);
+        // 🔥 Vigencia eliminada completamente
+        // No agregamos payload.put("vigencia", ...);
 
         Map<String, Object> limites = new HashMap<>();
-        limites.put("cantidadMaximaPagosExitosos", 0);
+        limites.put("cantidadMaximaPagosExitosos", 1); // ✅ solo un pago permitido
         limites.put("cantidadMaximaPagosFallidos", 0);
         payload.put("limitesDeUso", limites);
 
@@ -100,5 +94,4 @@ public class WompiService {
             return null;
         }
     }
-
 }
