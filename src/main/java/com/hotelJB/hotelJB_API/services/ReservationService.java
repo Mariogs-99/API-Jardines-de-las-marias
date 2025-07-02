@@ -52,4 +52,8 @@ public interface ReservationService {
 
     void saveEntity(Reservation reservation);
 
+    //?Buscar por medio de reserva
+    ReservationResponse getByReservationCode(String reservationCode) throws Exception;
+
+    ReservationResponse saveWithStatus(ReservationDTO data, String status) throws Exception;
 }

@@ -37,7 +37,7 @@ public class WompiService {
         this.wompiTokenService = wompiTokenService;
     }
 
-    public String crearEnlacePago(ReservationDTO dto, String tempReference) {
+    public String crearEnlacePago(ReservationDTO dto, String tempReference, String reservationCode) {
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("idAplicativo", wompiAppId);
@@ -58,7 +58,11 @@ public class WompiService {
         infoProducto.put("urlImagenProducto", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s");
         payload.put("infoProducto", infoProducto);
 
-        String redirectUrlWithParam = redirectUrl + "?tempReference=" + tempReference;
+        // ✅ Aquí está la corrección:
+        String redirectUrlWithParam =
+                redirectUrl
+                        + "?tempReference=" + tempReference
+                        + "&reservationCode=" + reservationCode;
 
         Map<String, Object> configuracion = new HashMap<>();
         configuracion.put("urlRedirect", redirectUrlWithParam);
@@ -70,11 +74,8 @@ public class WompiService {
         configuracion.put("notificarTransaccionCliente", true);
         payload.put("configuracion", configuracion);
 
-        // 🔥 Vigencia eliminada completamente
-        // No agregamos payload.put("vigencia", ...);
-
         Map<String, Object> limites = new HashMap<>();
-        limites.put("cantidadMaximaPagosExitosos", 1); // ✅ solo un pago permitido
+        limites.put("cantidadMaximaPagosExitosos", 1);
         limites.put("cantidadMaximaPagosFallidos", 0);
         payload.put("limitesDeUso", limites);
 
@@ -94,4 +95,5 @@ public class WompiService {
             return null;
         }
     }
+
 }

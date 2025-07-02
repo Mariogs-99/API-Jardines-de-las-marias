@@ -87,7 +87,7 @@ public class TempReservationService {
     }
 
     /**
-     * Método nuevo → confirma la reserva y la guarda definitivamente.
+     * Confirma la reserva existente. No crea una nueva.
      */
     public ReservationResponse confirmReservation(String tempReference) throws Exception {
         ReservationDTO dto = getTempReservation(tempReference);
@@ -95,10 +95,25 @@ public class TempReservationService {
             throw new RuntimeException("No existe reserva temporal con referencia: " + tempReference);
         }
 
-        ReservationResponse saved = reservationService.save(dto);
+        if (dto.getReservationCode() == null || dto.getReservationCode().isBlank()) {
+            throw new RuntimeException("La reserva temporal no contiene reservationCode.");
+        }
+
+        ReservationResponse existingReservation =
+                reservationService.getByReservationCode(dto.getReservationCode());
+        if (existingReservation == null) {
+            throw new RuntimeException("No se encontró reserva definitiva con código: " + dto.getReservationCode());
+        }
+
+        // Si quisieras actualizar algo (p.ej. status), puedes hacerlo así:
+        /*
+        existingReservation.setStatus("ACTIVA");
+        reservationService.update(...);
+        */
+
         deleteTempReservation(tempReference);
 
-        System.out.println("✅ Reserva definitiva creada con código: " + saved.getReservationCode());
-        return saved;
+        System.out.println("✅ Reserva definitiva confirmada con código: " + existingReservation.getReservationCode());
+        return existingReservation;
     }
 }

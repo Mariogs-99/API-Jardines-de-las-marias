@@ -30,39 +30,50 @@ public class WompiWebhookController {
         try {
             Map<String, Object> enlacePago = (Map<String, Object>) payload.get("EnlacePago");
 
-            String reference = null;
+            String tempReference = null;
             if (enlacePago != null) {
-                reference = (String) enlacePago.get("IdentificadorEnlaceComercio");
+                tempReference = (String) enlacePago.get("IdentificadorEnlaceComercio");
             }
 
             String resultado = (String) payload.get("ResultadoTransaccion");
 
-            System.out.println("Referencia recibida: " + reference);
+            System.out.println("Referencia recibida: " + tempReference);
             System.out.println("Resultado transacción: " + resultado);
 
-            if (reference != null && resultado != null && reference.startsWith("Temp-")) {
+            if (tempReference != null && resultado != null && tempReference.startsWith("Temp-")) {
 
-                // 🔶 SOLO SI ES EXITOSA
                 if (RESULT_SUCCESS.equals(resultado)) {
-                    // Recuperar DTO temporal
-                    ReservationDTO dto = tempReservationService.getTempReservation(reference);
+                    ReservationDTO dto = tempReservationService.getTempReservation(tempReference);
 
                     if (dto != null) {
-                        // Guardar reserva real en BD
-                        ReservationResponse saved = reservationService.save(dto);
+                        if (dto.getReservationCode() == null || dto.getReservationCode().isBlank()) {
+                            System.out.println("❌ DTO temporal no contiene reservationCode.");
+                        } else {
+                            ReservationResponse reservation =
+                                    reservationService.getByReservationCode(dto.getReservationCode());
 
-                        System.out.println("✅ Reserva creada tras pago exitoso. ID: " + saved.getReservationId());
+                            if (reservation != null) {
+                                dto.setStatus("ACTIVA");
+                                reservationService.update(dto, reservation.getReservationId());
 
-                        // Eliminar DTO temporal
-                        tempReservationService.deleteTempReservation(reference);
+                                System.out.println("✅ Reserva actualizada a ACTIVA: " + dto.getReservationCode());
+
+                                // ✅ Solo borrar si todo salió bien
+                                tempReservationService.deleteTempReservation(tempReference);
+                            } else {
+                                System.out.println("❌ No se encontró reserva real con código: " + dto.getReservationCode());
+                            }
+                        }
                     } else {
-                        System.out.println("❌ No se encontró pre-reserva para referencia: " + reference);
+                        System.out.println("❌ No se encontró temp reservation para referencia: " + tempReference);
                     }
+
                 } else {
                     System.out.println("❌ Pago fallido o anulado. No se crea reserva.");
                 }
+
             } else {
-                System.out.println("❌ Referencia inválida o desconocida: " + reference);
+                System.out.println("❌ Referencia inválida o desconocida: " + tempReference);
             }
 
         } catch (Exception e) {
@@ -73,4 +84,7 @@ public class WompiWebhookController {
 
         return ResponseEntity.ok("ok");
     }
+
+
+
 }

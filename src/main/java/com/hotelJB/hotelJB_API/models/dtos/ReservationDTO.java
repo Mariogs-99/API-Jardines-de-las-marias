@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class ReservationDTO {
     private String tempReference;
+    private String reservationCode;
     private LocalDate initDate;
     private LocalDate finishDate;
     private int cantPeople;
@@ -15,10 +16,7 @@ public class ReservationDTO {
     private String phone;
     private float payment;
     private String roomNumber; // opcional
-
-    private String status; //  ACTIVA, FUTURA o FINALIZADA
-
+    private String status; // ACTIVA, FUTURA o FINALIZADA
     private List<ReservationRoomDTO> rooms;
-
     private String paypalOrderId;
 }
