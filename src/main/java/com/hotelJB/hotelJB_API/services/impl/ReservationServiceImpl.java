@@ -796,5 +796,147 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 
+    //! Enviar correos por medio de webhook
+
+    @Override
+    public String buildReservationEmailBody(Reservation reservation) {
+        return String.format("""
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      background-color: #f3f3f3;
+      padding: 30px 15px;
+      color: #333;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .logo img {
+      height: 70px;
+    }
+    h2 {
+      color: #2E7D32;
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      color: #4E342E;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .info-box {
+      background-color: #FAFAFA;
+      border: 1px solid #E0E0E0;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+    .info-box p {
+      margin: 10px 0;
+    }
+    .highlight {
+      color: #2E7D32;
+      font-weight: 600;
+    }
+    .reservation-code {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #1B5E20;
+      font-weight: bold;
+      margin-top: 30px;
+    }
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #777;
+    }
+    .contact-box {
+      margin-top: 40px;
+      font-size: 0.95rem;
+      text-align: center;
+      border-top: 1px solid #ddd;
+      padding-top: 30px;
+      color: #444;
+    }
+    .contact-box p {
+      margin: 6px 0;
+    }
+    .contact-logo {
+      font-size: 1.4rem;
+      color: #2E7D32;
+      font-weight: bold;
+    }
+    .icon {
+      margin-right: 6px;
+    }
+    .social-icons {
+      margin-top: 10px;
+    }
+    .social-icons a {
+      margin: 0 6px;
+      text-decoration: none;
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s" alt="Hotel Jardines de las Marías" />
+    </div>
+    <h2>¡Gracias por su reserva, %s!</h2>
+    <div class="section-title">Resumen de la reserva</div>
+    <div class="info-box">
+      <p><span class="highlight">Fecha de entrada:</span> %s</p>
+      <p><span class="highlight">Fecha de salida:</span> %s</p>
+      <p><span class="highlight">Cantidad de personas:</span> %d</p>
+      <p><span class="highlight">Cantidad de habitaciones:</span> %d</p>
+    </div>
+    <div class="reservation-code">Código de Reserva: %s</div>
+    <div class="footer">
+      Este es un mensaje automático. Si necesita asistencia, puede contactarnos:
+    </div>
+    <div class="contact-box">
+      <div class="contact-logo">Hotel Jardines de las Marías</div>
+      <p>📞 2562-8891</p>
+      <p>📱 7890-5449</p>
+      <p>✉️ jardindelasmariashotel@gmail.com</p>
+      <p>📍 2 Avenida sur #23, Barrio el Calvario, Suchitoto</p>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/hoteljardindelasmarias" target="_blank">Facebook</a> |
+        <a href="https://www.instagram.com/hoteljardindelasmarias/" target="_blank">Instagram</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+""",
+                reservation.getName(),
+                reservation.getInitDate(),
+                reservation.getFinishDate(),
+                reservation.getCantPeople(),
+                reservation.getQuantityReserved(),
+                reservation.getReservationCode()
+        );
+    }
+
 
 }

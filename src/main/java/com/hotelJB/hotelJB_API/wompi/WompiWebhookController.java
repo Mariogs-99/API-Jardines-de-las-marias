@@ -1,7 +1,9 @@
 package com.hotelJB.hotelJB_API.wompi;
 
 import com.hotelJB.hotelJB_API.models.dtos.ReservationDTO;
+import com.hotelJB.hotelJB_API.models.entities.Reservation;
 import com.hotelJB.hotelJB_API.models.responses.ReservationResponse;
+import com.hotelJB.hotelJB_API.services.EmailSenderService;
 import com.hotelJB.hotelJB_API.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,9 @@ public class WompiWebhookController {
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     private static final String RESULT_SUCCESS = "ExitosaAprobada";
     private static final String RESULT_REJECTED = "Rechazada";
@@ -49,16 +54,29 @@ public class WompiWebhookController {
                         if (dto.getReservationCode() == null || dto.getReservationCode().isBlank()) {
                             System.out.println("❌ DTO temporal no contiene reservationCode.");
                         } else {
-                            ReservationResponse reservation =
+                            ReservationResponse reservationResponse =
                                     reservationService.getByReservationCode(dto.getReservationCode());
 
-                            if (reservation != null) {
+                            if (reservationResponse != null) {
                                 dto.setStatus("ACTIVA");
-                                reservationService.update(dto, reservation.getReservationId());
+                                reservationService.update(dto, reservationResponse.getReservationId());
 
                                 System.out.println("✅ Reserva actualizada a ACTIVA: " + dto.getReservationCode());
 
-                                // ✅ Solo borrar si todo salió bien
+                                // Enviar el correo tras confirmar reserva
+                                Reservation reservationEntity =
+                                        reservationService.findById(reservationResponse.getReservationId())
+                                                .orElseThrow(() -> new RuntimeException("Reserva no encontrada."));
+
+                                String htmlBody =
+                                        reservationService.buildReservationEmailBody(reservationEntity);
+
+                                emailSenderService.sendMail(
+                                        reservationEntity.getEmail(),
+                                        "Confirmación de Reserva - Hotel Jardines de las Marías",
+                                        htmlBody
+                                );
+
                                 tempReservationService.deleteTempReservation(tempReference);
                             } else {
                                 System.out.println("❌ No se encontró reserva real con código: " + dto.getReservationCode());
@@ -84,6 +102,7 @@ public class WompiWebhookController {
 
         return ResponseEntity.ok("ok");
     }
+
 
 
 

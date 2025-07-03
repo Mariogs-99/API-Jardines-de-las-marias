@@ -42,8 +42,13 @@ public class WompiService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("idAplicativo", wompiAppId);
         payload.put("identificadorEnlaceComercio", tempReference);
-        payload.put("monto", (int) (dto.getPayment()));
-        payload.put("nombreProducto", "Reserva habitación Hotel Jardín de las Marías");
+
+        // Deja el monto en dólares con centavos
+        double monto = Math.round(dto.getPayment() * 100.0) / 100.0;
+        payload.put("monto", monto);
+
+        String nombreProducto = "Reserva habitación para " + dto.getName();
+        payload.put("nombreProducto", nombreProducto);
 
         Map<String, Object> formaPago = new HashMap<>();
         formaPago.put("permitirTarjetaCreditoDebido", true);
@@ -58,7 +63,6 @@ public class WompiService {
         infoProducto.put("urlImagenProducto", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLo8t9NH1j1eo_tGo70lM2OcYKY4mhwhntvA&s");
         payload.put("infoProducto", infoProducto);
 
-        // ✅ Aquí está la corrección:
         String redirectUrlWithParam =
                 redirectUrl
                         + "?tempReference=" + tempReference
@@ -95,5 +99,8 @@ public class WompiService {
             return null;
         }
     }
+
+
+
 
 }
